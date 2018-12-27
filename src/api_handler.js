@@ -2,6 +2,9 @@
 const AWS = require('aws-sdk')
 
 const TwitterHandler = require('./api/twitter')
+const TwitterMgr = require('./lib/twitterMgr')
+
+let twitterMgr = new TwitterMgr()
 
 const doHandler = (handler, event, context, callback) => {
   handler.handle(event, context, (err, resp) => {
@@ -49,6 +52,7 @@ const preHandler = (handler, event, context, callback) => {
       .promise()
       .then(data => {
         const decrypted = String(data.Plaintext)
+        twitterMgr.setSecrets(JSON.parse(decrypted))
         doHandler(handler, event, context, callback)
       })
   } else {

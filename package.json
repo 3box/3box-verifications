@@ -4,7 +4,7 @@
   "description": "Verification service for 3Box",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --detectOpenHandles"
   },
   "repository": {
     "type": "git",
@@ -18,8 +18,7 @@
   "homepage": "https://github.com/3box/3box-verifications#readme",
   "dependencies": {
     "aws-sdk": "^2.380.0",
-    "serverless": "^1.35.1",
-    "serverless-kms-secrets": "^1.0.3",
+    "twit": "^2.2.11",
     "webpack-node-externals": "^1.7.2"
   },
   "devDependencies": {
@@ -28,6 +27,8 @@
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.6.0",
+    "jest": "^23.6.0",
+    "serverless-kms-secrets": "^1.0.3",
     "serverless-webpack": "^3.1.2",
     "webpack": "^3.3.0"
   }
