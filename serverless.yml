@@ -1,0 +1,44 @@
+service:
+  name: threebox-verification-service
+
+# Use the serverless-webpack plugin to transpile ES6
+plugins:
+  - serverless-webpack
+  - serverless-kms-secrets
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: develop
+  region: us-west-2
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+      - KMS:Decrypt
+      Resource: ${self:custom.kmsSecrets.keyArn}
+    - Effect: Allow
+      Action:
+      - s3:*
+      Resource: 'arn:aws:s3:::*'
+
+  environment:
+      SECRETS: ${self:custom.kmsSecrets.secrets.SECRETS}
+
+# Enable auto-packing of external modules
+custom:
+  webpackIncludeModules: true
+  serverless-kms-secrets:
+    secretsFile: kms-secrets.${opt:stage, self:provider.stage}.${opt:region, self:provider.region}.yml
+  kmsSecrets: ${file(kms-secrets.${opt:stage, self:provider.stage}.${opt:region, self:provider.region}.yml)}
+  contentCompression: 1024
+
+functions:
+  twitter:
+    handler: src/api_handler.twitter
+    timeout: 30
+    events:
+      - http:
+          method: post
+          cors: true
+          path: twitter
