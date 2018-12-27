@@ -50,4 +50,4 @@ functions:
       - http:
           method: get
           cors: true
-          path: .well_known/did.json
+          path: .well-known/did.json
