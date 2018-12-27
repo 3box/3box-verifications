@@ -5,6 +5,7 @@ service:
 plugins:
   - serverless-webpack
   - serverless-kms-secrets
+  - serverless-offline
 
 provider:
   name: aws
