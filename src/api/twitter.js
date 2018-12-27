@@ -13,7 +13,7 @@ class TwitterHandler {
             return
         }
 
-        if (Headers.Origin != "Origin: https://3box.io") {
+        if (event.headers.Origin != "Origin: https://3box.io") {
             cb({ code: 401, message: 'unauthorized'})
         }
 
@@ -26,14 +26,14 @@ class TwitterHandler {
             return
         }
 
-        verification_url = this.twitterMgr.findDidInTweets(twitter_handle, did)
+        let verification_url = this.twitterMgr.findDidInTweets(body.twitter_handle, body.did)
 
         if ( !verification_url ) {
             cb({ code: 400, message: 'no valid proof available' })
             return
         }
 
-        verification_claim = this.claimMgr.issue(did, twitter_handle, verification_url)
+        let verification_claim = this.claimMgr.issue(body.did, body.twitter_handle, verification_url)
 
         cb(null, {verification: verification_claim})
     }

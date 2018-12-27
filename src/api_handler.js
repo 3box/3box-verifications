@@ -48,7 +48,7 @@ const doHandler = (handler, event, context, callback) => {
 }
 
 const preHandler = (handler, event, context, callback) => {
-  if (!addressMgr.isSecretsSet() || !linkMgr.isSecretsSet()) {
+  if (!twitterMgr.isSecretsSet() || !claimMgr.isSecretsSet()) {
     const kms = new AWS.KMS()
     kms
       .decrypt({ CiphertextBlob: Buffer(process.env.SECRETS, 'base64') })
