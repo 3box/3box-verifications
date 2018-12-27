@@ -2,6 +2,7 @@
 const AWS = require('aws-sdk')
 
 const TwitterHandler = require('./api/twitter')
+const DidDocumentHandler = require('./api/diddoc')
 
 const TwitterMgr = require('./lib/twitterMgr')
 const ClaimMgr = require('./lib/claimMgr')
@@ -69,4 +70,8 @@ module.exports.twitter = (event, context, callback) => {
   preHandler(twitterHandler, event, context, callback)
 }
 
+let didDocumentHandler = new DidDocumentHandler(claimMgr)
+module.exports.diddoc = (event, context, callback) => {
+  preHandler(didDocumentHandler, event, context, callback)
+}
 
