@@ -2,9 +2,12 @@
 const AWS = require('aws-sdk')
 
 const TwitterHandler = require('./api/twitter')
+
 const TwitterMgr = require('./lib/twitterMgr')
+const ClaimMgr = require('./lib/claimMgr')
 
 let twitterMgr = new TwitterMgr()
+let claimMgr = new ClaimMgr()
 
 const doHandler = (handler, event, context, callback) => {
   handler.handle(event, context, (err, resp) => {
@@ -53,6 +56,7 @@ const preHandler = (handler, event, context, callback) => {
       .then(data => {
         const decrypted = String(data.Plaintext)
         twitterMgr.setSecrets(JSON.parse(decrypted))
+        claimMgr.setSecrets(JSON.parse(decrypted))
         doHandler(handler, event, context, callback)
       })
   } else {
@@ -60,7 +64,7 @@ const preHandler = (handler, event, context, callback) => {
   }
 }
 
-let twitterHandler = new TwitterHandler()
+let twitterHandler = new TwitterHandler(twitterMgr, claimMgr)
 module.exports.twitter = (event, context, callback) => {
   preHandler(twitterHandler, event, context, callback)
 }
