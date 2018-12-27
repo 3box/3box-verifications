@@ -42,3 +42,12 @@ functions:
           method: post
           cors: true
           path: twitter
+
+  diddoc:
+    handler: src/api_handler.diddoc
+    timeout: 30
+    events:
+      - http:
+          method: get
+          cors: true
+          path: .well_known/did.json
