@@ -18,6 +18,7 @@
   "homepage": "https://github.com/3box/3box-verifications#readme",
   "dependencies": {
     "aws-sdk": "^2.380.0",
+    "did-jwt": "0.0.9",
     "twit": "^2.2.11",
     "webpack-node-externals": "^1.7.2"
   },

@@ -43,13 +43,14 @@ class TwitterMgr {
             console.log('caught error', err.stack)
         })
         .then( res => {
-            let foundTweet = false
+            let status = ""
             res.data.forEach((tweet) => {
                 if (tweet.text.includes(did)) {
-                    foundTweet = true
+                    status = "https://twitter.com/" + handle + "/status/"
+                    status = status + tweet.id
                 }
             })
-            return foundTweet
+            return status
         })
     }
 
