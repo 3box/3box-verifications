@@ -2,9 +2,9 @@ const TwitterMgr = require('../twitterMgr')
 
 describe('TwitterMgr', () => {
     let sut
-    let fakeDid = 'did:https:fake'
-    let handle = '3boxuser'
-    let statusUrl = 'https://twitter.com/3boxuser/status/1063229025156546601'
+    let fakeDid = 'did:3:Qmasdfasdf'
+    let handle = 'oedtest'
+    let statusUrl = 'https://twitter.com/oedtest/status/1078648593987395584'
 
     beforeAll(() => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
@@ -58,10 +58,24 @@ describe('TwitterMgr', () => {
             })
     })
 
+    test('findDidInTweets() did found', done => {
+
+        sut.client.get = jest.fn(() => { return Promise.resolve({ data: [{ text: "my did is " + fakeDid, id_str: "1078648593987395584" }] }) })
+        sut
+            .findDidInTweets(handle, fakeDid)
+            .then(resp => {
+                expect(resp).toEqual(statusUrl)
+                done()
+            })
+            .catch(err => {
+                fail(err)
+                done()
+            })
+    })
 
     test('findDidInTweets() did not found', done => {
 
-        sut.client.get = jest.fn(() => { return Promise.resolve({ data: [{ text: "sometext", id: 1 }] }) })
+        sut.client.get = jest.fn(() => { return Promise.resolve({ data: [{ text: "sometext", id_str: "1" }] }) })
         sut
             .findDidInTweets(handle, fakeDid)
             .then(resp => {
@@ -74,19 +88,5 @@ describe('TwitterMgr', () => {
             })
     })
 
-    test('findDidInTweets() did found', done => {
-
-        sut.client.get = jest.fn(() => { return Promise.resolve({ data: [{ text: "sometext" + fakeDid, id: 1 }] }) })
-        sut
-            .findDidInTweets(handle, fakeDid)
-            .then(resp => {
-                expect(resp).toEqual("https://twitter.com/" + handle + "/status/" + 1)
-                done()
-            })
-            .catch(err => {
-                fail(err)
-                done()
-            })
-    })
 
 })
