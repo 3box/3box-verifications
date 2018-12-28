@@ -5,7 +5,7 @@ describe('ClaimMgr', () => {
     let did = 'did:muport:fake'
     let handle = '3boxuser'
     let url = 'https://twitter.com/3boxdb/status/1069604129826369537'
-    let signerKey = 'fa09a3ff0d486be2eb69545c393e2cf47cb53feb44a3550199346bdfa6f53245'
+    let signerPrivate = 'fa09a3ff0d486be2eb69545c393e2cf47cb53feb44a3550199346bdfa6f53245'
     let jwtSubstring = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ'
 
     beforeAll(() => {
@@ -20,10 +20,10 @@ describe('ClaimMgr', () => {
     test('setSecrets', () => {
         expect(sut.isSecretsSet()).toEqual(false)
         sut.setSecrets({
-            KEYPAIR_PRIVATE_KEY: signerKey,
+            KEYPAIR_PRIVATE_KEY: signerPrivate,
         })
         expect(sut.isSecretsSet()).toEqual(true)
-        expect(sut.signerKey).not.toBeUndefined()
+        expect(sut.signerPrivate).not.toBeUndefined()
     })
 
     test('issue() happy path', done => {

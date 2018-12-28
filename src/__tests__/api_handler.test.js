@@ -6,11 +6,12 @@ const apiHandler = require('../api_handler')
 
 describe('apiHandler', () => {
     beforeAll(() => {
+        // this keypair is a test one, not a secret really
         let secrets = {
             TWITTER_CONSUMER_KEY: 'FAKE',
             TWITTER_CONSUMER_SECRET: 'FAKE',
-            KEYPAIR_PRIVATE_KEY: 'fa09a3ff0d486be2eb69545c393e2cf47cb53feb44a3550199346bdfa6f53245',
-            KEYPAIR_DID: 'did:https:test.com'
+            KEYPAIR_PRIVATE_KEY: '4baba8f4a',
+            KEYPAIR_PUBLIC_KEY: '04fff936f805ee2'
         }
         MockAWS.mock('KMS', 'decrypt', Promise.resolve({ Plaintext: JSON.stringify(secrets) }))
         process.env.SECRETS = secrets

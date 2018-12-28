@@ -3,21 +3,21 @@ const didJWT = require('did-jwt')
 
 class ClaimMgr {
     constructor() {
-        this.signerKey = null
-        this.signerDid = null
+        this.signerPrivate = null
+        this.signerPublic = null
     }
 
     isSecretsSet() {
-        return (this.signerKey !== null || this.signerDid !== null)
+        return (this.signerPrivate !== null || this.signerPublic !== null)
     }
 
     setSecrets(secrets) {
-        this.signerKey = secrets.KEYPAIR_PRIVATE_KEY
-        this.signerDid = secrets.KEYPAIR_DID
+        this.signerPrivate = secrets.KEYPAIR_PRIVATE_KEY
+        this.signerPublic = secrets.KEYPAIR_PUBLIC_KEY
     }
 
    async issue(did, handle, url){
-       const signer = didJWT.SimpleSigner(this.signerKey)
+       const signer = didJWT.SimpleSigner(this.signerPrivate)
        return didJWT.createJWT(
            {
                sub: did,
@@ -38,9 +38,9 @@ class ClaimMgr {
             });
    }
 
-    getEthereumAddress(){
-       if (!this.signerDid) throw new Error("no keypair configured yet")
-       return this.signerDid.split(':')[2]
+    getPublicKeyHex(){
+       if (!this.signerPublic) throw new Error("no keypair created yet")
+       return this.signerPublic
    }
 
 }
