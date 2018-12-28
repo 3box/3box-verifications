@@ -1,5 +1,6 @@
 class TwitterHandler {
     constructor (twitterMgr, claimMgr){
+        this.name = "TwitterHandler"
         this.twitterMgr = twitterMgr
         this.claimMgr = claimMgr
     }

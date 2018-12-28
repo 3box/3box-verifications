@@ -12,6 +12,16 @@ let claimMgr = new ClaimMgr()
 
 const doHandler = (handler, event, context, callback) => {
   handler.handle(event, context, (err, resp) => {
+
+    let body = JSON.stringify({})
+    if (handler.name === "DidDocumentHandler") {
+      body = JSON.stringify(resp)
+    } else {
+      body = JSON.stringify({
+        status: 'success',
+        data: resp
+      })
+    }
     let response
     if (err == null) {
       response = {
@@ -20,10 +30,7 @@ const doHandler = (handler, event, context, callback) => {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Credentials': true,
         },
-        body: JSON.stringify({
-          status: 'success',
-          data: resp
-        })
+        body: body
       }
     } else {
       let code = 500
