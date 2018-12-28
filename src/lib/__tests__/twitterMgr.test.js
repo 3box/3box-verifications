@@ -58,13 +58,14 @@ describe('TwitterMgr', () => {
             })
     })
 
+
     test('findDidInTweets() did not found', done => {
 
-        sut.findDidInTweets = jest.fn(() => { return Promise.resolve(statusUrl) })
+        sut.client.get = jest.fn(() => { return Promise.resolve({ data: [{ text: "sometext", id: 1 }] }) })
         sut
             .findDidInTweets(handle, fakeDid)
             .then(resp => {
-                expect(resp).toEqual(statusUrl)
+                expect(resp).toEqual("")
                 done()
             })
             .catch(err => {
@@ -72,4 +73,20 @@ describe('TwitterMgr', () => {
                 done()
             })
     })
+
+    test('findDidInTweets() did found', done => {
+
+        sut.client.get = jest.fn(() => { return Promise.resolve({ data: [{ text: "sometext" + fakeDid, id: 1 }] }) })
+        sut
+            .findDidInTweets(handle, fakeDid)
+            .then(resp => {
+                expect(resp).toEqual("https://twitter.com/" + handle + "/status/" + 1)
+                done()
+            })
+            .catch(err => {
+                fail(err)
+                done()
+            })
+    })
+
 })
