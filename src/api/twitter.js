@@ -31,8 +31,7 @@ class TwitterHandler {
 
         let verification_url = ''
         try {
-            verification_url = this.twitterMgr.findDidInTweets(body.twitter_handle, body.did)
-            console.log("VERIFICATION URL", verification_url)
+            verification_url = await this.twitterMgr.findDidInTweets(body.twitter_handle, body.did)
         } catch(e) {
             cb({ code: 500, message: 'error while trying to verify the did' })
             return
@@ -45,7 +44,7 @@ class TwitterHandler {
 
         let verification_claim = ''
         try {
-            verification_claim = this.claimMgr.issue(body.did, body.twitter_handle, verification_url)
+            verification_claim = await this.claimMgr.issue(body.did, body.twitter_handle, verification_url)
         } catch(e) {
             cb({ code: 500, message: 'could not issue a verification claim' })
             return
