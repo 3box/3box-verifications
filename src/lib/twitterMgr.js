@@ -48,7 +48,6 @@ class TwitterMgr {
                 if (tweet.text.includes(did)) {
                     status = "https://twitter.com/" + handle + "/status/"
                     status = status + tweet.id
-                    return
                 }
             })
             return status
