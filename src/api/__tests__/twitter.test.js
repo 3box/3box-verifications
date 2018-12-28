@@ -66,7 +66,7 @@ describe('TwitterHandler', () => {
 
 
     test('no verification url', done => {
-        twitterMgrMock.findDidInTweets.mockReturnValue(null)
+        twitterMgrMock.findDidInTweets.mockReturnValue("")
 
         sut.handle(
             {

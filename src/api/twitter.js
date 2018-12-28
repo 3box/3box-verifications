@@ -31,7 +31,7 @@ class TwitterHandler {
 
         let verification_url = this.twitterMgr.findDidInTweets(body.twitter_handle, body.did)
 
-        if ( !verification_url ) {
+        if (!verification_url.trim()) {
             cb({ code: 400, message: 'no valid proof available' })
             return
         }
