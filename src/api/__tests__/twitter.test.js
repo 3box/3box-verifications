@@ -28,7 +28,7 @@ describe('TwitterHandler', () => {
     })
 
     test('not coming from the 3box origin', done => {
-        sut.handle({ headers: {Origin: "abc"}, body: '{}' }, {}, (err, res) => {
+        sut.handle({ headers: {origin: "abc"}, body: '{}' }, {}, (err, res) => {
             expect(err).not.toBeNull()
             expect(err.message).toEqual('unauthorized')
             expect(err.code).toEqual(401)
@@ -38,7 +38,7 @@ describe('TwitterHandler', () => {
 
     test('no did', done => {
         sut.handle(
-            { headers: {Origin: "Origin: https://3box.io"}, body: JSON.stringify({ other: 'other' }) },
+            { headers: { origin: "https://subdomain.3box.io"}, body: JSON.stringify({ other: 'other' }) },
             {},
             (err, res) => {
                 expect(err).not.toBeNull()
@@ -52,7 +52,7 @@ describe('TwitterHandler', () => {
     test('no twitter handle', done => {
         sut.handle(
             {
-                headers: { Origin: "Origin: https://3box.io" },
+                headers: { origin: "https://3box.io" },
                 body: JSON.stringify({ did: 'did:https:test' }) },
             {},
             (err, res) => {
@@ -70,7 +70,7 @@ describe('TwitterHandler', () => {
 
         sut.handle(
             {
-                headers: { Origin: "Origin: https://3box.io" },
+                headers: { origin: "https://3box.io" },
                 body: JSON.stringify({ did: 'did:https:test', twitter_handle: 'test' })
             },
             {},
@@ -89,7 +89,7 @@ describe('TwitterHandler', () => {
 
         sut.handle(
             {
-                headers: { Origin: "Origin: https://3box.io" },
+                headers: { origin: "https://subdomain.3box.io" },
                 body: JSON.stringify({ did: 'did:https:test', twitter_handle: 'test' })
             },
             {},
