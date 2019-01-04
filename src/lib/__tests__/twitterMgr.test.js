@@ -60,9 +60,6 @@ describe('TwitterMgr', () => {
 
     test('findDidInTweets() did found', done => {
 
-
-    test('findDidInTweets() did not found', done => {
-
         sut.client.get = jest.fn(() => { return Promise.resolve({ data: [{ full_text: "my did is " + fakeDid, id_str: "1078648593987395584" }] }) })
 
         sut
