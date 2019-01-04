@@ -36,7 +36,7 @@ class TwitterMgr {
         if (!handle) throw new Error("no twitter handle provided")
         if (!did) throw new Error("no did provided")
 
-        let params = {screen_name: handle}
+        let params = {screen_name: handle, tweet_mode: 'extended'}
 
         return this.client.get('statuses/user_timeline', params)
         .catch( err => {
@@ -45,7 +45,7 @@ class TwitterMgr {
         .then( res => {
             let status = ''
             res.data.forEach((tweet) => {
-                if (tweet.text.includes(did)) {
+                if (tweet.full_text.includes(did)) {
                     status = "https://twitter.com/" + handle + "/status/"
                     status = status + tweet.id_str
                 }

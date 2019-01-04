@@ -60,7 +60,8 @@ describe('TwitterMgr', () => {
 
     test('findDidInTweets() did found', done => {
 
-        sut.client.get = jest.fn(() => { return Promise.resolve({ data: [{ text: "my did is " + fakeDid, id_str: "1078648593987395584" }] }) })
+        sut.client.get = jest.fn(() => { return Promise.resolve({ data: [{ full_text: "my did is " + fakeDid, id_str: "1078648593987395584" }] }) })
+
         sut
             .findDidInTweets(handle, fakeDid)
             .then(resp => {
@@ -75,7 +76,8 @@ describe('TwitterMgr', () => {
 
     test('findDidInTweets() did not found', done => {
 
-        sut.client.get = jest.fn(() => { return Promise.resolve({ data: [{ text: "sometext", id_str: "1" }] }) })
+        sut.client.get = jest.fn(() => { return Promise.resolve({ data: [{ full_text: "sometext", id_str: "1" }] }) })
+
         sut
             .findDidInTweets(handle, fakeDid)
             .then(resp => {
