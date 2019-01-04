@@ -45,7 +45,6 @@ class TwitterMgr {
         .then( res => {
             let status = ''
             res.data.forEach((tweet) => {
-                console.log(tweet)
                 if (tweet.full_text.includes(did)) {
                     status = "https://twitter.com/" + handle + "/status/"
                     status = status + tweet.id
