@@ -1,11 +1,12 @@
 class DidDocumentHandler {
     constructor(claimMgr) {
+        this.name = "DidDocumentHandler"
         this.claimMgr = claimMgr
     }
 
     async handle(event, context, cb) {
 
-        let address = this.claimMgr.getEthereumAddress()
+        let publicKeyHex = this.claimMgr.getPublicKeyHex()
 
         let body = {
             "@context": "https://w3id.org/did/v1",
@@ -14,7 +15,7 @@ class DidDocumentHandler {
                 "id": "did:https:verifications.3box.io#owner",
                 "type": "Secp256k1VerificationKey2018",
                 "owner": "did:https:verifications.3box.io",
-                "ethereumAddress": address
+                "publicKeyHex": publicKeyHex
             }],
             "authentication": [{
                 "type": "Secp256k1SignatureAuthentication2018",
