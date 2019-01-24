@@ -46,6 +46,15 @@ functions:
           cors: true
           path: twitter
 
+  email_send:
+    handler: src/api_handler.email
+    timeout: 30
+    events:
+      - http:
+          method: post
+          cors: true
+          path: send-email-verification
+
   diddoc:
     handler: src/api_handler.diddoc
     timeout: 30
