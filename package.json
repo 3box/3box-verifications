@@ -18,13 +18,14 @@
   },
   "homepage": "https://github.com/3box/3box-verifications#readme",
   "dependencies": {
-    "aws-sdk": "^2.380.0",
+    "aws-sdk": "^2.395.0",
     "did-jwt": "0.0.9",
-    "twit": "^2.2.11",
-    "webpack-node-externals": "^1.7.2",
+    "redis": "^2.8.0",
     "serverless-kms-secrets": "^1.0.3",
     "serverless-webpack": "^5.2.0",
-    "webpack": "^4.28.1"
+    "twit": "^2.2.11",
+    "webpack": "^4.28.1",
+    "webpack-node-externals": "^1.7.2"
   },
   "devDependencies": {
     "aws-sdk-mock": "^4.3.0",
