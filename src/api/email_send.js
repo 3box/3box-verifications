@@ -24,7 +24,11 @@ class EmailSendHandler {
 
         let verification_code = ''
         try {
-            verification_code = await this.emailMgr.sendVerification(body.email_address, body.did)
+            if (!body.address) {
+                verification_code = await this.emailMgr.sendVerification(body.email_address, body.did, null)
+            } else {
+                verification_code = await this.emailMgr.sendVerification(body.email_address, body.did, body.address)
+            }
         } catch (e) {
             cb({ code: 500, message: 'error while trying to send the verification code' })
             return
