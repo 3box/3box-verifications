@@ -4,6 +4,7 @@
   "description": "Verification service for 3Box",
   "main": "src/index.js",
   "scripts": {
+    "lint": "./node_modules/.bin/standard --verbose src/**",
     "test": "jest --detectOpenHandles",
     "coverage": "jest --coverage"
   },
@@ -35,6 +36,7 @@
     "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.6.0",
     "jest": "^23.6.0",
-    "serverless-offline": "^3.31.3"
+    "serverless-offline": "^3.31.3",
+    "standard": "^12.0.1"
   }
 }
