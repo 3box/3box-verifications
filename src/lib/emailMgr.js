@@ -7,38 +7,59 @@ class EmailMgr {
     this.redisStore = redisStore
   }
 
-
   async sendVerification(email, did, address) {
     if (!email) throw new Error('no email')
     const code = this.generateCode()
     await this.storeCode(email, code)
-    let name = "there 👋"
+    let name = 'there 👋'
     if (address) {
-      //Todo: Obtain name from profile
+      //ToDo: Obtain name from profile
     }
 
-    let params = {
-      to: email,
-      from: 'verifications_do-not-reply@3box.io',
-      subject: 'Your 3Box Email Verification Code',
-      message: template({
-        name: name,
-        code: code,
-      }),
+    const params = {
+      Destination: {
+        ToAddresses: [email]
+      },
+      Message: {
+        Body: {
+          Html: {
+            Charset: 'UTF-8',
+            Data: template({
+              name: name,
+              code: code
+            })
+          }
+        },
+        Subject: {
+          Charset: 'UTF-8',
+          Data: 'Your 3Box Email Verification Code'
+        }
+      },
+      Source: 'verifications_do-not-reply@3box.io'
     }
-    let sendPromise = this.ses.sendEmail(params).promise()
+
+    // let params = {
+    //   to: email,
+    //   from: 'verifications_do-not-reply@3box.io',
+    //   subject: 'Your 3Box Email Verification Code',
+    //   message: template({
+    //     name: name,
+    //     code: code
+    //   })
+    // }
+
+    const sendPromise = this.ses.sendEmail(params).promise()
 
     sendPromise
-      .then(function (data) {
-        console.log(data)
-        console.log('email sent')
+      .then(data => {
+        console.log('email sent', data)
       })
-      .catch(function (err) {
-        console.error(err, err.stack)
+      .catch(err =>  {
+        console.log(err)
       })
 
-    const template = (data) => {
-      `<!DOCTYPE html>
+    const template = data =>
+    `<!DOCTYPE html>
         <html>
         <head>
             <meta charset="utf-8">
@@ -53,7 +74,6 @@ class EmailMgr {
             <p>If you believe that you have received this message in error, please email support@3box.io.</p>
         </body>
         </html>`
-    }
   }
 
   async checkVerification() {
