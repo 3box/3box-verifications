@@ -1,10 +1,21 @@
 const AWS = require('aws-sdk')
+const { RedisStore, NullStore } = require('./store')
 
 class EmailMgr {
-  constructor (redisStore) {
+  constructor () {
+    this.redis_host = null
     AWS.config.update({ region: 'us-west-2' })
     this.ses = new AWS.SES()
-    this.redisStore = redisStore
+    this.redisStore = new NullStore()
+  }
+
+  isSecretsSet () {
+    return (this.redis_host !== null)
+  }
+
+  setSecrets (secrets) {
+    this.redis_host = secrets.REDIS_HOST
+    this.redisStore = new RedisStore({ host: this.redis_host })
   }
 
   async sendVerification (email, did, address) {
