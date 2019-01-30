@@ -26,7 +26,7 @@ class EmailMgr {
         <body>
             <p>Hi ${data.name},<br /></p>
             <p>To complete the verification of this email address, enter the six digit code found below into the 3Box app: </p>
-            <p><strong>${data.code}</strong></p>
+            <p><span style="color:#B03A2E;font-weight:bold">${data.code}</span></p>
             <p>This code will expire in 12 hours. If you do not successfully verify your email before then, you will need to
               restart the process.</p>
             <p>If you believe that you have received this message in error, please email support@3box.io.</p>
@@ -52,24 +52,16 @@ class EmailMgr {
           Data: 'Your 3Box Email Verification Code'
         }
       },
+      ReplyToAddresses: ['verifications_do-not-reply@3box.io'],
       Source: 'verifications_do-not-reply@3box.io'
     }
-
-    // let params = {
-    //   to: email,
-    //   from: 'verifications_do-not-reply@3box.io',
-    //   subject: 'Your 3Box Email Verification Code',
-    //   message: template({
-    //     name: name,
-    //     code: code
-    //   })
-    // }
 
     const sendPromise = this.ses.sendEmail(params).promise()
 
     return sendPromise
       .then(data => {
         console.log('email sent', data)
+        return data
       })
       .catch(err => {
         console.log(err)
