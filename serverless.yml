@@ -27,11 +27,14 @@ provider:
 
 # Enable auto-packing of external modules
 custom:
-  webpackIncludeModules: true
   serverless-kms-secrets:
     secretsFile: kms-secrets.${opt:stage, self:provider.stage}.${opt:region, self:provider.region}.yml
   kmsSecrets: ${file(kms-secrets.${opt:stage, self:provider.stage}.${opt:region, self:provider.region}.yml)}
   contentCompression: 1024
+  webpack:
+    webpackConfig: 'webpack.config.js'   # Name of webpack configuration file
+    includeModules: true   # Node modules configuration for packaging
+    packager: 'npm'   # Packager that will be used to package your external modules
 
 functions:
   twitter:
