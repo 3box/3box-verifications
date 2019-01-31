@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/3box/3box-verifications#readme",
   "dependencies": {
+    "3box": "^1.2.2",
     "aws-sdk": "^2.395.0",
     "did-jwt": "0.0.9",
     "redis": "^2.8.0",

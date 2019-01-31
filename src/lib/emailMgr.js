@@ -1,5 +1,6 @@
 const AWS = require('aws-sdk')
 const { RedisStore, NullStore } = require('./store')
+const Box = require('3box')
 
 class EmailMgr {
   constructor () {
@@ -24,7 +25,8 @@ class EmailMgr {
     await this.storeCode(email, code)
     let name = 'there 👋'
     if (address) {
-      // ToDo: Obtain name from profile
+      const profile = await Box.getProfile(address)
+      name = `${profile.name} ${profile.emoji}`
     }
 
     const template = data =>
