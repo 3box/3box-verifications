@@ -26,7 +26,11 @@ class EmailMgr {
     let name = 'there 👋'
     if (address) {
       const profile = await Box.getProfile(address)
-      name = `${profile.name} ${profile.emoji}`
+      try {
+        name = `${profile.name} ${profile.emoji}`
+      } catch (error) {
+        console.log('error trying to get profile', error)
+      }
     }
 
     const template = data =>
