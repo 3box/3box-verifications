@@ -114,7 +114,7 @@ The response data follows the [jsend](https://labs.omniti.com/labs/jsend) standa
 This endpoint takes a JWT as an input, which contains the code `C`, and verifies that:
 * The JWT signed by the saved DID
 * The code `C` in the JWT is the same as the saved code `C`
-* The stored timestamp is not older than 1h
+* The stored timestamp is not older than 12h
 
 ### Body
 

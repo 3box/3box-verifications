@@ -59,6 +59,15 @@ functions:
           cors: true
           path: send-email-verification
 
+  email_verify:
+    handler: src/api_handler.email_verify
+    timeout: 30
+    events:
+      - http:
+          method: post
+          cors: true
+          path: email-verify
+
   diddoc:
     handler: src/api_handler.diddoc
     timeout: 30
