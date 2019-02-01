@@ -21,6 +21,10 @@ provider:
       Action:
       - s3:*
       Resource: 'arn:aws:s3:::*'
+    - Effect: Allow
+      Action:
+      - ses:SendEmail
+      Resource: 'arn:aws:ses:*'
 
   environment:
       SECRETS: ${self:custom.kmsSecrets.secrets.SECRETS}
@@ -45,6 +49,15 @@ functions:
           method: post
           cors: true
           path: twitter
+
+  email_send:
+    handler: src/api_handler.email_send
+    timeout: 30
+    events:
+      - http:
+          method: post
+          cors: true
+          path: send-email-verification
 
   diddoc:
     handler: src/api_handler.diddoc

@@ -2,19 +2,21 @@
 const AWS = require('aws-sdk')
 
 const TwitterHandler = require('./api/twitter')
+const EmailSendHandler = require('./api/email_send')
 const DidDocumentHandler = require('./api/diddoc')
 
 const TwitterMgr = require('./lib/twitterMgr')
+const EmailMgr = require('./lib/emailMgr')
 const ClaimMgr = require('./lib/claimMgr')
 
 let twitterMgr = new TwitterMgr()
 let claimMgr = new ClaimMgr()
+let emailMgr = new EmailMgr()
 
 const doHandler = (handler, event, context, callback) => {
   handler.handle(event, context, (err, resp) => {
-
     let body = JSON.stringify({})
-    if (handler.name === "DidDocumentHandler") {
+    if (handler.name === 'DidDocumentHandler') {
       body = JSON.stringify(resp)
     } else {
       body = JSON.stringify({
@@ -28,7 +30,7 @@ const doHandler = (handler, event, context, callback) => {
         statusCode: 200,
         headers: {
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Credentials': true,
+          'Access-Control-Allow-Credentials': true
         },
         body: body
       }
@@ -42,7 +44,7 @@ const doHandler = (handler, event, context, callback) => {
         statusCode: code,
         headers: {
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Credentials': true,
+          'Access-Control-Allow-Credentials': true
         },
         body: JSON.stringify({
           status: 'error',
@@ -59,12 +61,13 @@ const preHandler = (handler, event, context, callback) => {
   if (!twitterMgr.isSecretsSet() || !claimMgr.isSecretsSet()) {
     const kms = new AWS.KMS()
     kms
-      .decrypt({ CiphertextBlob: Buffer(process.env.SECRETS, 'base64') })
+      .decrypt({ CiphertextBlob: Buffer.from(process.env.SECRETS, 'base64') })
       .promise()
       .then(data => {
         const decrypted = String(data.Plaintext)
         twitterMgr.setSecrets(JSON.parse(decrypted))
         claimMgr.setSecrets(JSON.parse(decrypted))
+        emailMgr.setSecrets(JSON.parse(decrypted))
         doHandler(handler, event, context, callback)
       })
   } else {
@@ -77,8 +80,12 @@ module.exports.twitter = (event, context, callback) => {
   preHandler(twitterHandler, event, context, callback)
 }
 
+let emailSendHandler = new EmailSendHandler(emailMgr)
+module.exports.email_send = (event, context, callback) => {
+  preHandler(emailSendHandler, event, context, callback)
+}
+
 let didDocumentHandler = new DidDocumentHandler(claimMgr)
 module.exports.diddoc = (event, context, callback) => {
   preHandler(didDocumentHandler, event, context, callback)
 }
-
