@@ -91,8 +91,8 @@ class EmailMgr {
     let storedCode
 
     try {
-      email = this.redisStore.read(did)
-      storedCode = this.redisStore.read(email)
+      email = await this.redisStore.read(did)
+      storedCode = await this.redisStore.read(email)
       return (userCode === storedCode)
     } catch (e) {
       console.log('error while trying to retrieve the code', e.message)
@@ -103,7 +103,7 @@ class EmailMgr {
     return Math.floor(100000 + Math.random() * 900000)
   }
 
-  async storeCode (email, did, code) {
+  async storeCode (email, code) {
     try {
       this.redisStore.write(email, code)
     } catch (e) {
@@ -113,7 +113,7 @@ class EmailMgr {
 
   async storeDid (email, did) {
     try {
-      this.redisStore.write(email, did)
+      this.redisStore.write(did, email)
     } catch (e) {
       console.log('error while trying to store the did', e.message)
     }

@@ -6,9 +6,12 @@ describe('EmailVerifyHandler', () => {
   let emailMgrMock = {
     verify: jest.fn()
   }
+  let claimMgrMock = {
+    decode: jest.fn()
+  }
 
   beforeAll(() => {
-    sut = new EmailVerifyHandler(emailMgrMock)
+    sut = new EmailVerifyHandler(emailMgrMock, claimMgrMock)
   })
 
   test('empty constructor', () => {
@@ -37,16 +40,18 @@ describe('EmailVerifyHandler', () => {
     )
   })
 
-  test.skip('happy path', done => {
+  test('code not found', done => {
+    sut.claimMgr.decode = jest.fn(() => { return { claim: { 'code': '123456' }, iss: 'did:3:somebody' } })
+    sut.emailMgr.verify = jest.fn(() => { return false })
     sut.handle(
       {
         headers: { origin: 'https://subdomain.3box.io' },
-        body: JSON.stringify({ did: 'did:https:test', jwt: jwt })
+        body: JSON.stringify({ did: 'did:https:test', verification: 'abcd' })
       },
       {},
       (err, res) => {
-        expect(err).toBeNull()
-        expect(res).toBeTruthy()
+        expect(err.code).toEqual(403)
+        expect(err.message).toEqual('code not found or expired')
         done()
       }
     )
