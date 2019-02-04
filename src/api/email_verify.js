@@ -14,28 +14,32 @@ class EmailVerifyHandler {
       return
     }
 
-    if (!body.did) {
-      cb({ code: 403, message: 'no did' })
+    if (!body.verification) {
+      cb({ code: 403, message: 'no verification' })
       return
     }
 
-    if (!body.code) {
-      cb({ code: 403, message: 'no verification code' })
-      return
-    }
-
-    let verification_claim = ''
-    let email = await this.emailMgr.verify(body.code, body.did)
-    if (email) {
-      try {
-        verification_claim = await this.claimMgr.issueEmail(body.did, email)
-      } catch (e) {
-        cb({ code: 500, message: 'could not issue a verification claim' })
+    let decodedJWT
+    let verificationClaim
+    try {
+      decodedJWT = this.claimMgr.decode(body.verification)
+      let did = decodedJWT.iss
+      let userCode = decodedJWT.claim.code
+      let email = await this.emailMgr.verify(did, userCode)
+      if (email) {
+        try {
+          verificationClaim = await this.claimMgr.issueEmail(did, email, userCode)
+        } catch (e) {
+          cb({ code: 500, message: 'could not issue a verification claim' })
+          return
+        }
+        cb(null, { verification: verificationClaim })
+      } else {
+        cb({ code: 403, message: 'code not found or expired' })
         return
       }
-      cb(null, { verification: verification_claim })
-    } else {
-      cb({ code: 403, message: 'code not found or expired' })
+    } catch (e) {
+      cb({ code: 500, message: 'error while verify the code given by the user' })
     }
   }
 }

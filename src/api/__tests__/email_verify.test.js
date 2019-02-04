@@ -2,10 +2,13 @@ const EmailVerifyHandler = require('../email_verify')
 
 describe('EmailVerifyHandler', () => {
   let sut
-  let userCode = 123456
+  let goodCode = 123456
+  let wrongCode = 654321
   let userDid = 'did:3:xyz'
   let userEmail = 'user@3box.io'
-  let sampleJWT = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1MjU5Mjc1MTcsImF1ZCI6ImRpZDp1cG9ydDoyb3NuZko0V3k3TEJBbTJuUEJYaXJlMVdmUW43NVJyVjZUcyIsImV4cCI6MTU1NzQ2MzQyMSwibm'
+  let sampleInputJWT = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1MjU5Mjc1MTcsImF1ZCI6ImRpZDp1cG9ydDoyb3NuZko0V3k3TEJBbTJuUEJYaXJlMVdmUW43NVJyVjZUcyIsImV4cCI6MTU1NzQ2MzQyMSwibm'
+  let sampleOutputJWT = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1MjU5Mjc1MTcsImF1ZCI6'
+
   let emailMgrMock = {
     verify: jest.fn()
   }
@@ -30,61 +33,66 @@ describe('EmailVerifyHandler', () => {
     })
   })
 
-  test('no did', done => {
+  test('no verification JWT', done => {
     sut.handle(
       { headers: { origin: 'https://subdomain.3box.io' }, body: JSON.stringify({ other: 'other' }) },
       {},
       (err, res) => {
         expect(err).not.toBeNull()
         expect(err.code).toEqual(403)
-        expect(err.message).toEqual('no did')
-        done()
-      }
-    )
-  })
-
-  test('no verification code', done => {
-    sut.handle(
-      { headers: { origin: 'https://subdomain.3box.io' }, body: JSON.stringify({ did: userDid }) },
-      {},
-      (err, res) => {
-        expect(err).not.toBeNull()
-        expect(err.code).toEqual(403)
-        expect(err.message).toEqual('no verification code')
+        expect(err.message).toEqual('no verification')
         done()
       }
     )
   })
 
   test('code not found', done => {
+    let decodedJWT = {
+      iss: userDid,
+      sub: 'did:https:verifications.3box.io',
+      iat: Date.now(),
+      claim: {
+        code: wrongCode
+      }
+    }
+    sut.claimMgr.decode = jest.fn(() => { return decodedJWT })
     sut.emailMgr.verify = jest.fn(() => { return Promise.resolve(null) })
     sut.handle(
       {
         headers: { origin: 'https://subdomain.3box.io' },
-        body: JSON.stringify({ did: userDid, code: userCode + 1 })
+        body: JSON.stringify({ verification: sampleInputJWT })
       },
       {},
       (err, res) => {
-        expect(err.code).toEqual(403)
         expect(err.message).toEqual('code not found or expired')
+        expect(err.code).toEqual(403)
         done()
       }
     )
   })
 
-  test('code not found', done => {
+  test('code found, claim returned', done => {
+    let decodedJWT = {
+      iss: userDid,
+      sub: 'did:https:verifications.3box.io',
+      iat: Date.now(),
+      claim: {
+        code: goodCode
+      }
+    }
+    sut.claimMgr.decode = jest.fn(() => { return decodedJWT })
     sut.emailMgr.verify = jest.fn(() => { return Promise.resolve(userEmail) })
-    sut.claimMgr.issueEmail = jest.fn(() => { return Promise.resolve(sampleJWT) })
+    sut.claimMgr.issueEmail = jest.fn(() => { return Promise.resolve(sampleOutputJWT) })
     sut.handle(
       {
         headers: { origin: 'https://subdomain.3box.io' },
-        body: JSON.stringify({ code: userCode, did: userDid })
+        body: JSON.stringify({ verification: sampleInputJWT })
       },
       {},
       (err, res) => {
         expect(err).toBeNull()
         expect(res).toBeDefined()
-        expect(res.verification).toEqual(sampleJWT)
+        expect(res.verification).toEqual(sampleOutputJWT)
         done()
       }
     )
