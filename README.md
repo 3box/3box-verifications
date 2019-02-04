@@ -111,22 +111,21 @@ The response data follows the [jsend](https://labs.omniti.com/labs/jsend) standa
 
 **Endpoint:** `POST /email-verify`
 
-This endpoint takes a pair <did, code> and verifies that:
-* The code entered by the user is the same one that was sent via email
-* The code was generated less than 12h ago
-* The did sent by the user has an email waiting to be verified
+This endpoint takes a JWT as an input, which contains the code `C`, and verifies that:
+* The JWT signed by the saved DID
+* The code `C` in the JWT is the same as the saved code `C`
+* The stored timestamp is not older than 12h
 
 
 ### Body
 
 ```js
 {
-  did:  <the DID of the user>,
-  code: <the code sent to the user via email>
+  verification: <the input-verification-claim signed by the did of the user>
 }
 ```
 
-**Verification claim format**
+**Input verification claim format**
 
 ```js
 {
@@ -134,7 +133,21 @@ This endpoint takes a pair <did, code> and verifies that:
   sub: 'did:https:verifications.3box.io',
   iat: <current timestamp in seconds>,
   claim: {
-    email_address: <the email address of the user>
+     code: <the 6 digit code>
+  }
+}
+```
+
+**Output verification claim format**
+
+```js
+{
+  iss: 'did:https:verifications.3box.io',
+  sub: <the users DID>,
+  iat: <current timestamp in seconds>,
+  claim: {
+    email_address: <the email address of the user>,
+    code: <the 6 digit code>
   }
 }
 ```
@@ -149,7 +162,7 @@ The response data follows the [jsend](https://labs.omniti.com/labs/jsend) standa
 {
   status: 'success',
   data: {
-    verification: <verification-claim>
+    verification: <output-verification-claim>
   }
 }
 ```
