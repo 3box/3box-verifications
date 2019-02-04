@@ -15,7 +15,7 @@ class ClaimMgr {
     this.signerPublic = secrets.KEYPAIR_PUBLIC_KEY
   }
 
-  async issue (did, handle, url) {
+  async issueTwitter (did, handle, url) {
     const signer = didJWT.SimpleSigner(this.signerPrivate)
     return didJWT.createJWT(
       {
@@ -37,8 +37,25 @@ class ClaimMgr {
       })
   }
 
-  decode (jwt) {
-    return didJWT.decodeJWT(jwt)
+  async issueEmail (did, email) {
+    const signer = didJWT.SimpleSigner(this.signerPrivate)
+    return didJWT.createJWT(
+      {
+        sub: did,
+        iat: Math.floor(Date.now() / 1000),
+        claim: {
+          email_address: email
+        }
+      },
+      {
+        issuer: 'did:https:verifications.3box.io',
+        signer
+      }).then(jwt => {
+      return jwt
+    })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   getPublicKeyHex () {

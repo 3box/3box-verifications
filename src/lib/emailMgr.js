@@ -93,7 +93,11 @@ class EmailMgr {
     try {
       email = await this.redisStore.read(did)
       storedCode = await this.redisStore.read(email)
-      return (userCode === storedCode)
+      if (userCode === storedCode) {
+        return email
+      } else {
+        return null
+      }
     } catch (e) {
       console.log('error while trying to retrieve the code', e.message)
     }
