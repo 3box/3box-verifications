@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk')
 const { RedisStore, NullStore } = require('./store')
-const Box = require('3box')
+const fetch = require('node-fetch')
 
 class EmailMgr {
   constructor () {
@@ -26,8 +26,9 @@ class EmailMgr {
     await this.storeDid(email, did)
     let name = 'there 👋'
     if (address) {
-      const profile = await Box.getProfile(address)
       try {
+        const res = await fetch(`https://ipfs.3box.io/profile?address=${address}`)
+        let profile = await res.json()
         name = `${profile.name} ${profile.emoji}`
       } catch (error) {
         console.log('error trying to get profile', error)
