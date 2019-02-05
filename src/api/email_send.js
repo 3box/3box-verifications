@@ -22,18 +22,17 @@ class EmailSendHandler {
       return
     }
 
-    let verificationCode = ''
     try {
-      if (!body.address) {
-        verificationCode = await this.emailMgr.sendVerification(body.email_address, body.did, null)
+      if (body.address) {
+        await this.emailMgr.sendVerification(body.email_address, body.did, body.address)
       } else {
-        verificationCode = await this.emailMgr.sendVerification(body.email_address, body.did, body.address)
+        await this.emailMgr.sendVerification(body.email_address, body.did)
       }
+      cb(null)
+      return
     } catch (e) {
       cb({ code: 500, message: 'error while trying to send the verification code' })
-      return
     }
-    cb(null)
   }
 }
 module.exports = EmailSendHandler
