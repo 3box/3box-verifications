@@ -19,9 +19,9 @@
   },
   "homepage": "https://github.com/3box/3box-verifications#readme",
   "dependencies": {
-    "3box": "^1.2.2",
     "aws-sdk": "^2.395.0",
     "did-jwt": "0.0.9",
+    "node-fetch": "^2.3.0",
     "redis": "^2.8.0",
     "serverless-kms-secrets": "^1.0.3",
     "serverless-webpack": "^5.2.0",
