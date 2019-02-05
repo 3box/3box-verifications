@@ -30,11 +30,11 @@ class EmailSendHandler {
         sesResponse = await this.emailMgr.sendVerification(body.email_address, body.did)
       }
       console.log('ses response', sesResponse)
-      cb(null)
-      return
     } catch (e) {
       cb({ code: 500, message: 'error while trying to send the verification code' })
+      return
     }
+    cb(null)
   }
 }
 module.exports = EmailSendHandler
