@@ -76,7 +76,6 @@ class EmailMgr {
     }
 
     const sendPromise = this.ses.sendEmail(params).promise()
-
     return sendPromise
   }
 

@@ -22,12 +22,14 @@ class EmailSendHandler {
       return
     }
 
+    let sesResponse
     try {
       if (body.address) {
-        await this.emailMgr.sendVerification(body.email_address, body.did, body.address)
+        sesResponse = await this.emailMgr.sendVerification(body.email_address, body.did, body.address)
       } else {
-        await this.emailMgr.sendVerification(body.email_address, body.did)
+        sesResponse = await this.emailMgr.sendVerification(body.email_address, body.did)
       }
+      console.log('ses response', sesResponse)
       cb(null)
       return
     } catch (e) {
