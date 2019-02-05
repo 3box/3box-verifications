@@ -78,13 +78,6 @@ class EmailMgr {
     const sendPromise = this.ses.sendEmail(params).promise()
 
     return sendPromise
-      .then(data => {
-        console.log('email sent', data)
-        return data
-      })
-      .catch(err => {
-        console.log(err)
-      })
   }
 
   async verify (did, userCode) {
