@@ -22,8 +22,8 @@ class EmailMgr {
   async sendVerification (email, did, address) {
     if (!email) throw new Error('no email')
     const code = this.generateCode()
-    await this.storeCode(email, code)
-    await this.storeDid(email, did)
+    this.storeCode(email, code)
+    this.storeDid(email, did)
     let name = 'there 👋'
     if (address) {
       try {
@@ -100,7 +100,7 @@ class EmailMgr {
     return Math.floor(100000 + Math.random() * 900000)
   }
 
-  async storeCode (email, code) {
+  storeCode (email, code) {
     try {
       this.redisStore.write(email, code)
     } catch (e) {
@@ -108,7 +108,7 @@ class EmailMgr {
     }
   }
 
-  async storeDid (email, did) {
+  storeDid (email, did) {
     try {
       this.redisStore.write(did, email)
     } catch (e) {
