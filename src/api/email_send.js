@@ -34,7 +34,7 @@ class EmailSendHandler {
       cb({ code: 500, message: 'error while trying to send the verification code' })
       return
     }
-    cb(null)
+    cb(null, { data: sesResponse })
   }
 }
 module.exports = EmailSendHandler
