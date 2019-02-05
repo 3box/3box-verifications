@@ -23,6 +23,7 @@ class EmailMgr {
     if (!email) throw new Error('no email')
     const code = this.generateCode()
     await this.storeCode(email, code)
+    await this.storeDid(email, did)
     let name = 'there 👋'
     if (address) {
       const profile = await Box.getProfile(address)
@@ -85,8 +86,21 @@ class EmailMgr {
       })
   }
 
-  async checkVerification () {
-    throw new Error('not implemented yet')
+  async verify (did, userCode) {
+    let email
+    let storedCode
+
+    try {
+      email = await this.redisStore.read(did)
+      storedCode = await this.redisStore.read(email)
+      if (userCode === storedCode) {
+        return email
+      } else {
+        return null
+      }
+    } catch (e) {
+      console.log('error while trying to retrieve the code', e.message)
+    }
   }
 
   generateCode () {
@@ -98,6 +112,14 @@ class EmailMgr {
       this.redisStore.write(email, code)
     } catch (e) {
       console.log('error while trying to store the code', e.message)
+    }
+  }
+
+  async storeDid (email, did) {
+    try {
+      this.redisStore.write(did, email)
+    } catch (e) {
+      console.log('error while trying to store the did', e.message)
     }
   }
 }

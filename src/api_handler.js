@@ -3,6 +3,7 @@ const AWS = require('aws-sdk')
 
 const TwitterHandler = require('./api/twitter')
 const EmailSendHandler = require('./api/email_send')
+const EmailVerifyHandler = require('./api/email_verify')
 const DidDocumentHandler = require('./api/diddoc')
 
 const TwitterMgr = require('./lib/twitterMgr')
@@ -83,6 +84,11 @@ module.exports.twitter = (event, context, callback) => {
 let emailSendHandler = new EmailSendHandler(emailMgr)
 module.exports.email_send = (event, context, callback) => {
   preHandler(emailSendHandler, event, context, callback)
+}
+
+let emailVerifyHandler = new EmailVerifyHandler(emailMgr, claimMgr)
+module.exports.email_verify = (event, context, callback) => {
+  preHandler(emailVerifyHandler, event, context, callback)
 }
 
 let didDocumentHandler = new DidDocumentHandler(claimMgr)

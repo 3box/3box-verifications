@@ -51,6 +51,16 @@ describe('EmailMgr', () => {
       })
   })
 
+  test('verify() happy path', async done => {
+    sut.redisStore.read = jest.fn(() => { return Promise.resolve('123456') })
+    sut
+      .verify(userDid, '123456')
+      .then(resp => {
+        expect(resp).toBeTruthy()
+        done()
+      })
+  })
+
   afterAll(() => {
     AWS.restore('SES')
   })
