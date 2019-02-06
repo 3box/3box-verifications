@@ -12,11 +12,11 @@ provider:
   runtime: nodejs8.10
   stage: develop
   region: us-west-2
-  vpc:
-    securityGroupIds:
-      - sg-02dd472b06426da21
-    subnetIds:
-      - subnet-0c386a75
+  # vpc:
+  #   securityGroupIds:
+  #     - sg-02dd472b06426da21
+  #   subnetIds:
+  #     - subnet-0c386a75
   iamRoleStatements:
     - Effect: Allow
       Action:
