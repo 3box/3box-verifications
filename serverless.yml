@@ -31,7 +31,7 @@ provider:
       - ses:SendEmail
       Resource: 'arn:aws:ses:*'
     - Effect: Allow
-    - Action:
+      Action:
       - ec2:CreateNetworkInterface
       - ec2:DescribeNetworkInterfaces
       - ec2:DeleteNetworkInterface
