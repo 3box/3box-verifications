@@ -1,6 +1,6 @@
 const EmailMgr = require('../emailMgr')
-const NullStore = require('../store').NullStore
 const AWS = require('aws-sdk-mock')
+const NullStore = require('../store').NullStore
 
 describe('EmailMgr', () => {
   let store
@@ -52,9 +52,9 @@ describe('EmailMgr', () => {
   })
 
   test('verify() happy path', async done => {
-    sut.redisStore.read = jest.fn(() => { return Promise.resolve('123456') })
+    sut.getStoredCode = jest.fn(() => { return Promise.resolve({ storedCode: 123456, email: 'user@3box.io' }) })
     sut
-      .verify(userDid, '123456')
+      .verify(userDid, 123456)
       .then(resp => {
         expect(resp).toBeTruthy()
         done()

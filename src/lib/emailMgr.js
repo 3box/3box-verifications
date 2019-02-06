@@ -3,11 +3,11 @@ const { RedisStore, NullStore } = require('./store')
 const fetch = require('node-fetch')
 
 class EmailMgr {
-  constructor () {
+  constructor (store = new NullStore()) {
     AWS.config.update({ region: 'us-west-2' })
     this.ses = new AWS.SES()
     this.redis_host = null
-    this.redisStore = new NullStore()
+    this.redisStore = store
   }
 
   isSecretsSet () {
@@ -16,7 +16,6 @@ class EmailMgr {
 
   setSecrets (secrets) {
     this.redis_host = secrets.REDIS_HOST
-    this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 }) || new NullStore()
   }
 
   async sendVerification (email, did, address) {
@@ -88,14 +87,11 @@ class EmailMgr {
   }
 
   async verify (did, userCode) {
-    let email
-    let storedCode
-
     try {
-      email = await this.redisStore.read(did)
-      storedCode = await this.redisStore.read(email)
-      if (userCode === storedCode) {
-        return email
+      const res = await this.getStoredCode(did)
+
+      if (userCode === res.storedCode) {
+        return res.email
       } else {
         return null
       }
@@ -110,6 +106,7 @@ class EmailMgr {
 
   async storeCode (email, code) {
     try {
+      this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
       this.redisStore.write(email, code)
     } catch (e) {
       console.log('error while trying to store the code', e.message)
@@ -118,7 +115,19 @@ class EmailMgr {
 
   async storeDid (email, did) {
     try {
+      this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
       this.redisStore.write(did, email)
+    } catch (e) {
+      console.log('error while trying to store the did', e.message)
+    }
+  }
+
+  async getStoredCode (did) {
+    try {
+      this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
+      let email = this.redisStore.read(did)
+      let storedCode = this.redisStore.read(email)
+      return { email, storedCode }
     } catch (e) {
       console.log('error while trying to store the did', e.message)
     }
