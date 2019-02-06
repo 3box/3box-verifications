@@ -14,7 +14,7 @@ provider:
   region: us-west-2
   vpc:
     securityGroupIds:
-      - vpc-f31cdd8b
+      - sg-02dd472b06426da21
     subnetIds:
       - subnet-0c386a75
   iamRoleStatements:
