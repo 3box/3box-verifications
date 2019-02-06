@@ -16,7 +16,7 @@ class EmailMgr {
 
   setSecrets (secrets) {
     this.redis_host = secrets.REDIS_HOST
-    this.redisStore = new RedisStore({ host: this.redis_host })
+    this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
   }
 
   async sendVerification (email, did, address) {
