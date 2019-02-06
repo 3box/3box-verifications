@@ -15,7 +15,7 @@ jobs:
       - run:
           name: install-serverless-and dependencies
           command: |
-            sudo npm install -g serverless@1.25.0 codecov
+            sudo npm install -g serverless@1.32.0 codecov
             npm install
 
       - run:
@@ -30,9 +30,9 @@ jobs:
           name: deploy-to-serverless
           command: |
             sls package
-            if [ "${CIRCLE_BRANCH}" == "develop" ]; then
+            #if [ "${CIRCLE_BRANCH}" == "develop" ]; then
               sls deploy --stage develop
-            fi
+            #fi
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               sls deploy --stage master
             fi
