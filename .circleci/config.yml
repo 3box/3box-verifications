@@ -15,7 +15,7 @@ jobs:
       - run:
           name: install-serverless-and dependencies
           command: |
-            sudo npm install -g serverless@1.25.0 codecov
+            sudo npm install -g serverless@1.32.0 codecov
             npm install
 
       - run:
