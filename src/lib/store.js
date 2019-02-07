@@ -29,6 +29,10 @@ class RedisStore {
   invalidate (key) {
     this.redis.del(key)
   }
+
+  quit () {
+    this.redis.quit()
+  }
 }
 
 /**
@@ -44,6 +48,8 @@ class NullStore {
   write (key, obj) {}
 
   invalidate (key) {}
+
+  quit () {}
 }
 
 module.exports = { RedisStore, NullStore }

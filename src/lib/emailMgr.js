@@ -105,32 +105,40 @@ class EmailMgr {
   }
 
   async storeCode (email, code) {
+    this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
     try {
-      this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
       this.redisStore.write(email, code)
     } catch (e) {
       console.log('error while trying to store the code', e.message)
+    } finally {
+      this.redisStore.quit()
     }
   }
 
   async storeDid (email, did) {
+    this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
     try {
-      this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
       this.redisStore.write(did, email)
     } catch (e) {
       console.log('error while trying to store the did', e.message)
+    } finally {
+      this.redisStore.quit()
     }
   }
 
   async getStoredCode (did) {
+    let email
+    let storedCode
+    this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
     try {
-      this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
-      let email = this.redisStore.read(did)
-      let storedCode = this.redisStore.read(email)
-      return { email, storedCode }
+      email = this.redisStore.read(did)
+      storedCode = this.redisStore.read(email)
     } catch (e) {
       console.log('error while trying to store the did', e.message)
+    } finally {
+      this.redisStore.quit()
     }
+    return { email, storedCode }
   }
 }
 
