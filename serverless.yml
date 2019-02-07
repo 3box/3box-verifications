@@ -12,6 +12,11 @@ provider:
   runtime: nodejs8.10
   stage: develop
   region: us-west-2
+  vpc:
+    securityGroupIds:
+      - vpc-f31cdd8b
+    subnetIds:
+      - subnet-0c386a75
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -25,6 +30,12 @@ provider:
       Action:
       - ses:SendEmail
       Resource: 'arn:aws:ses:*'
+    - Effect: Allow
+      Action:
+      - ec2:CreateNetworkInterface
+      - ec2:DescribeNetworkInterfaces
+      - ec2:DeleteNetworkInterface
+      Resource: 'arn:aws:ec2:*'
 
   environment:
       SECRETS: ${self:custom.kmsSecrets.secrets.SECRETS}

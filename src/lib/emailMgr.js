@@ -4,9 +4,9 @@ const fetch = require('node-fetch')
 
 class EmailMgr {
   constructor () {
-    this.redis_host = null
     AWS.config.update({ region: 'us-west-2' })
     this.ses = new AWS.SES()
+    this.redis_host = null
     this.redisStore = new NullStore()
   }
 
@@ -16,7 +16,7 @@ class EmailMgr {
 
   setSecrets (secrets) {
     this.redis_host = secrets.REDIS_HOST
-    this.redisStore = new RedisStore({ host: this.redis_host })
+    this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 }) || new NullStore()
   }
 
   async sendVerification (email, did, address) {
