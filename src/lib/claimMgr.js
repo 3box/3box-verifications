@@ -37,15 +37,14 @@ class ClaimMgr {
       })
   }
 
-  async issueEmail (did, email, code) {
+  async issueEmail (did, email) {
     const signer = didJWT.SimpleSigner(this.signerPrivate)
     return didJWT.createJWT(
       {
         sub: did,
         iat: Math.floor(Date.now() / 1000),
         claim: {
-          email_address: email,
-          code: code
+          email_address: email
         }
       },
       {
