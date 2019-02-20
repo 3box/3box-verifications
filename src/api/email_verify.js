@@ -22,7 +22,7 @@ class EmailVerifyHandler {
     let decodedJWT
     let verificationClaim
     try {
-      decodedJWT = this.claimMgr.decode(body.verification)
+      decodedJWT = this.claimMgr.decode(body.verification).payload
       let did = decodedJWT.iss
       let userCode = decodedJWT.claim.code
       let email = await this.emailMgr.verify(did, userCode)
