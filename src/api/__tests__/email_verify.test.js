@@ -51,7 +51,7 @@ describe('EmailVerifyHandler', () => {
       payload: {
         iss: userDid,
         sub: 'did:https:verifications.3box.io',
-        iat: Date.now(),
+        iat: Math.floor(Date.now()/1000),
         claim: {
           code: wrongCode
         }
@@ -78,7 +78,7 @@ describe('EmailVerifyHandler', () => {
       payload: {
         iss: userDid,
         sub: 'did:https:verifications.3box.io',
-        iat: Date.now(),
+        iat: Math.floor(Date.now()/1000),
         claim: {
           code: goodCode
         }
