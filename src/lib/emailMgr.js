@@ -131,8 +131,8 @@ class EmailMgr {
     let storedCode
     this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
     try {
-      email = this.redisStore.read(did)
-      storedCode = this.redisStore.read(email)
+      email = await this.redisStore.read(did)
+      storedCode = await this.redisStore.read(email)
     } catch (e) {
       console.log('error while trying to store the did', e.message)
     } finally {
