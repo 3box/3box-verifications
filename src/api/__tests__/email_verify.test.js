@@ -48,11 +48,13 @@ describe('EmailVerifyHandler', () => {
 
   test('code not found', done => {
     let decodedJWT = {
-      iss: userDid,
-      sub: 'did:https:verifications.3box.io',
-      iat: Date.now(),
-      claim: {
-        code: wrongCode
+      payload: {
+        iss: userDid,
+        sub: 'did:https:verifications.3box.io',
+        iat: Date.now(),
+        claim: {
+          code: wrongCode
+        }
       }
     }
     sut.claimMgr.decode = jest.fn(() => { return decodedJWT })
@@ -73,11 +75,13 @@ describe('EmailVerifyHandler', () => {
 
   test('code found, claim returned', done => {
     let decodedJWT = {
-      iss: userDid,
-      sub: 'did:https:verifications.3box.io',
-      iat: Date.now(),
-      claim: {
-        code: goodCode
+      payload: {
+        iss: userDid,
+        sub: 'did:https:verifications.3box.io',
+        iat: Date.now(),
+        claim: {
+          code: goodCode
+        }
       }
     }
     sut.claimMgr.decode = jest.fn(() => { return decodedJWT })
