@@ -114,17 +114,18 @@ The response data follows the [jsend](https://labs.omniti.com/labs/jsend) standa
 This endpoint takes a JWT as an input, which contains the code `C`, and verifies that:
 * The JWT signed by the saved DID
 * The code `C` in the JWT is the same as the saved code `C`
-* The stored timestamp is not older than 1h
+* The stored timestamp is not older than 12h
+
 
 ### Body
 
 ```js
 {
-  verification: <the JWT signed by the DID of the user>
+  verification: <the input-verification-claim signed by the did of the user>
 }
 ```
 
-**Verification claim format**
+**Input verification claim format**
 
 ```js
 {
@@ -132,6 +133,20 @@ This endpoint takes a JWT as an input, which contains the code `C`, and verifies
   sub: 'did:https:verifications.3box.io',
   iat: <current timestamp in seconds>,
   claim: {
+     code: <the 6 digit code>
+  }
+}
+```
+
+**Output verification claim format**
+
+```js
+{
+  iss: 'did:https:verifications.3box.io',
+  sub: <the users DID>,
+  iat: <current timestamp in seconds>,
+  claim: {
+    email_address: <the email address of the user>,
     code: <the 6 digit code>
   }
 }
@@ -145,6 +160,9 @@ The response data follows the [jsend](https://labs.omniti.com/labs/jsend) standa
 
 ```js
 {
-  status: 'success'
+  status: 'success',
+  data: {
+    verification: <output-verification-claim>
+  }
 }
 ```
