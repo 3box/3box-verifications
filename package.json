@@ -20,7 +20,7 @@
   "homepage": "https://github.com/3box/3box-verifications#readme",
   "dependencies": {
     "aws-sdk": "^2.397.0",
-    "did-jwt": "0.0.9",
+    "did-jwt": "0.1.2",
     "node-fetch": "^2.3.0",
     "redis": "^2.8.0",
     "serverless-kms-secrets": "^1.0.3",
