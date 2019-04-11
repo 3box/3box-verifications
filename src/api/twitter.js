@@ -16,7 +16,7 @@ class TwitterHandler {
 
     let domains = /https:\/\/(\w+\.)?3box.io/i
 
-    if (!domains.test(event.headers.origin)) {
+    if (!domains.test(event.headers.origin) && !domains.test(event.headers.Origin)) {
       cb({ code: 401, message: 'unauthorized' })
       return
     }
