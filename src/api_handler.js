@@ -96,3 +96,22 @@ let didDocumentHandler = new DidDocumentHandler(claimMgr)
 module.exports.diddoc = (event, context, callback) => {
   preHandler(didDocumentHandler, event, context, callback)
 }
+
+module.exports.v2_start_email_verification = (event, context, callback) => {
+  /**
+   * {
+   *  did: <the DID of the user>,
+   *  email_address: <the email address of the user>
+   * }
+   * https://www.notion.so/threebox/Onboarding-2-5-spec-d11470694816404196a772b55d5c56e4#129ed60aabc24fe9bb31385c090a7081
+   */
+}
+
+module.exports.v2_finalize_email_verification = (event, context, callback) => {
+  /**
+   * {
+   *   verification: <the input-verification-claim signed by the did of the user>
+   * }
+   * https://www.notion.so/threebox/Onboarding-2-5-spec-d11470694816404196a772b55d5c56e4#2cafde58196a492f8650bb2e56ab4cdd
+   */
+}
