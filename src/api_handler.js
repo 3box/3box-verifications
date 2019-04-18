@@ -15,6 +15,7 @@ let claimMgr = new ClaimMgr()
 let emailMgr = new EmailMgr()
 
 const doHandler = (handler, event, context, callback) => {
+  context.callbackWaitsForEmptyEventLoop = false
   handler.handle(event, context, (err, resp) => {
     let body = JSON.stringify({})
     if (handler.name === 'DidDocumentHandler') {
