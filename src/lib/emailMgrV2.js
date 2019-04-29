@@ -8,6 +8,7 @@ const { RedisStore } = require('./store')
 registerResolver()
 
 const SESSION_TTL = 1000 * 3600 * 12 // 12 hours in ms
+const ENCRYPTION_KEY_SUFFIX = '#encryptionKey'
 
 /**
  * Overrides the regular EmailMgr and tooling
@@ -23,10 +24,10 @@ class EmailMgrV2 extends EmailMgr {
 
     const ts = (new Date()).getTime()
     const code = this.generateCode()
-    const { publicKey, address } = this.getDIDDetails(did)
+    const { encryptionKey, address } = this.getDIDDetails(did)
 
     const hashedCode = this.hashCode(code)
-    const encryptedCode = this.encryptCode(publicKey, code)
+    const encryptedCode = this.encryptCode(encryptionKey, code)
 
     await this.storeSession({ did, email, hashedCode, ts })
 
@@ -73,7 +74,7 @@ class EmailMgrV2 extends EmailMgr {
     }
   }
 
-  encryptCode (publicKey, code) {
+  encryptCode (encryptionKey, code) {
     // TODO: use the public key of our user to encrypt the code
   }
 
@@ -85,8 +86,19 @@ class EmailMgrV2 extends EmailMgr {
   async getDIDDetails (did) {
     const doc = await resolve(did)
 
-    // TODO: return the did content (public key and address)
-    // TODO: which key should we use?
+    const publicKeys = doc.publicKey
+    const encryptionKeys = publicKeys.filter(x => {
+      x.id.endsWith(ENCRYPTION_KEY_SUFFIX)
+    })
+
+    if (encryptionKeys.length !== 1) {
+      throw new Error(`Invalid number of encryption key in the did doc: ${encryptionKeys}`)
+    }
+
+    const encryptionKey = encryptionKeys[0]
+    const address = '' // TODO: get public key
+
+    return { encryptionKey, address }
   }
 
   storeSession ({ did, email, hashedCode, ts }) {
