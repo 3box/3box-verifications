@@ -70,4 +70,51 @@ describe('EmailSendHandler', () => {
             }
         )
     })
+
+    test('happy path with address', done => {
+        emailMgrMock.sendVerification.mockReturnValue(true)
+
+        sut.handle(
+          {
+              headers: { origin: "https://subdomain.3box.io" },
+              body: JSON.stringify({ did: 'did:https:test', email_address: 'test@3box.io', address: '0x' })
+          },
+          {},
+          (err, res) => {
+              expect(err).toBeNull()
+              expect(res).toBeUndefined()
+              done()
+          }
+        )
+    })
+})
+
+describe('EmailSendHandlerV2', () => {
+    let sut
+    let emailMgrMock = {
+        sendVerification: jest.fn()
+    }
+
+
+    beforeAll(() => {
+        sut = new EmailSendHandler(emailMgrMock, false)
+    })
+
+    test('unhandled address path', done => {
+        emailMgrMock.sendVerification.mockReturnValue(true)
+
+        sut.handle(
+          {
+              headers: { origin: "https://subdomain.3box.io" },
+              body: JSON.stringify({ did: 'did:https:test', email_address: 'test@3box.io', address: '0x' })
+          },
+          {},
+          (err, res) => {
+              expect(err).not.toBeNull()
+              expect(err.code).toEqual(400)
+              expect(err.message).toEqual('adress is not allowed')
+              done()
+          }
+        )
+    })
 })

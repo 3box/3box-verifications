@@ -87,6 +87,11 @@ module.exports.email_send = (event, context, callback) => {
   preHandler(emailSendHandler, event, context, callback)
 }
 
+let emailSendHandlerV2 = new EmailSendHandler(emailMgr, false)
+module.exports.v2_start_email_verification = (event, context, callback) => {
+  preHandler(emailSendHandlerV2, event, context, callback)
+}
+
 let emailVerifyHandler = new EmailVerifyHandler(emailMgr, claimMgr)
 module.exports.email_verify = (event, context, callback) => {
   preHandler(emailVerifyHandler, event, context, callback)
@@ -97,15 +102,6 @@ module.exports.diddoc = (event, context, callback) => {
   preHandler(didDocumentHandler, event, context, callback)
 }
 
-module.exports.v2_start_email_verification = (event, context, callback) => {
-  /**
-   * {
-   *  did: <the DID of the user>,
-   *  email_address: <the email address of the user>
-   * }
-   * https://www.notion.so/threebox/Onboarding-2-5-spec-d11470694816404196a772b55d5c56e4#129ed60aabc24fe9bb31385c090a7081
-   */
-}
 
 module.exports.v2_finalize_email_verification = (event, context, callback) => {
   /**

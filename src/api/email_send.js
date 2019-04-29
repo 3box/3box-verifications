@@ -1,7 +1,8 @@
 class EmailSendHandler {
-  constructor (emailMgr) {
+  constructor (emailMgr, allowAddress = true) {
     this.name = 'EmailSendHandler'
     this.emailMgr = emailMgr
+    this.allowAddress = allowAddress // This is used to differentiate between old and new API
   }
 
   async handle (event, context, cb) {
@@ -26,8 +27,11 @@ class EmailSendHandler {
     try {
       if (!body.address) {
         verificationCode = await this.emailMgr.sendVerification(body.email_address, body.did, null)
-      } else {
+      } else if (this.allowAddress) {
         verificationCode = await this.emailMgr.sendVerification(body.email_address, body.did, body.address)
+      } else {
+        cb({ code: 400, message: 'adress is not allowed' })
+        return
       }
     } catch (e) {
       cb({ code: 500, message: 'error while trying to send the verification code' })
