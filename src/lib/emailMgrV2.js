@@ -1,5 +1,9 @@
+const resolve = require('did-resolver')
+const registerResolver = require('muport-did-resolver')
 const EmailMgr = require('./emailMgr')
 const { RedisStore } = require('./store')
+
+registerResolver()
 
 /**
  * Overrides the regular EmailMgr and tooling
@@ -53,8 +57,11 @@ class EmailMgrV2 extends EmailMgr {
     // TODO: return the hashed code
   }
 
-  getDIDDetails(did) {
+  async getDIDDetails(did) {
+    const doc = await resolve(did)
+
     // TODO: return the did content (public key and address)
+    // TODO: which key should we use?
   }
 
   storeSession({did, email, hashedCode, ts}) {
