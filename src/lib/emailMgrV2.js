@@ -1,4 +1,5 @@
 const EmailMgr = require('./emailMgr')
+const { RedisStore } = require('./store')
 
 /**
  * Overrides the regular EmailMgr and tooling
@@ -52,12 +53,21 @@ class EmailMgrV2 extends EmailMgr {
     // TODO: return the hashed code
   }
 
-  storeSession({did, email, hashedCode, ts}) {
-    // TODO: store the session info in redis
-  }
-
   getDIDDetails(did) {
     // TODO: return the did content (public key and address)
+  }
+
+  storeSession({did, email, hashedCode, ts}) {
+    // TODO: store the session info in redis
+    this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
+    try {
+      const content = JSON.stringify({email, hashedCode, ts})
+      this.redisStore.write(`v2:${did}`, content)
+    } catch (e) {
+      console.log('error while trying to store the code', e.message)
+    } finally {
+      this.redisStore.quit()
+    }
   }
 }
 
