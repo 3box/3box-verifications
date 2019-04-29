@@ -29,6 +29,8 @@
     "redis": "^2.8.0",
     "serverless-kms-secrets": "^1.0.4",
     "serverless-webpack": "^5.2.0",
+    "tweetnacl": "^1.0.1",
+    "tweetnacl-util": "^0.15.0",
     "twit": "^2.2.11",
     "webpack": "^4.28.1",
     "webpack-node-externals": "^1.7.2"

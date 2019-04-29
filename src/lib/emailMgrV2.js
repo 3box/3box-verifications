@@ -1,3 +1,5 @@
+const nacl = require('tweetnacl')
+nacl.util = require('tweetnacl-util')
 const resolve = require('did-resolver')
 const registerResolver = require('muport-did-resolver')
 const Multihash = require('multihashes')
@@ -27,12 +29,17 @@ class EmailMgrV2 extends EmailMgr {
     const { encryptionKey, address } = this.getDIDDetails(did)
 
     const hashedCode = this.hashCode(code)
-    const encryptedCode = this.encryptCode(encryptionKey, code)
+    const { nonce, ciphertext, publicKey } = this.encryptCode(encryptionKey, code)
 
     await this.storeSession({ did, email, hashedCode, ts })
 
     const name = await this.getUserName(address)
-    const url = `https://accounts.3box.io/verify-email?code=${encryptedCode}`
+
+    // Prepare the payload
+    const payloadStr = JSON.stringify({ nonce, ciphertext, publicKey })
+    const payload = nacl.util.encodeBase64(nacl.utils.decodeUTF8(payloadStr))
+
+    const url = `https://accounts.3box.io/verify-email?code=${payload}`
 
     const content =
       `<!DOCTYPE html>
@@ -75,7 +82,22 @@ class EmailMgrV2 extends EmailMgr {
   }
 
   encryptCode (encryptionKey, code) {
-    // TODO: use the public key of our user to encrypt the code
+    const nonce = nacl.randomBytes(24)
+    const toPublic = nacl.util.decodeBase64(encryptionKey.publicKeyBase64)
+
+    if (typeof code === 'string') {
+      code = nacl.util.decodeUTF8(code)
+    }
+
+    const ephemeralKeyPair = nacl.box.keyPair()
+
+    const ciphertext = nacl.box(code, nonce, toPublic, ephemeralKeyPair.secretKey)
+
+    return {
+      nonce: nacl.util.encodeBase64(nonce),
+      ciphertext: nacl.util.encodeBase64(ciphertext),
+      publicKey: ephemeralKeyPair.publicKey
+    }
   }
 
   hashCode (code) {
@@ -96,7 +118,7 @@ class EmailMgrV2 extends EmailMgr {
     }
 
     const encryptionKey = encryptionKeys[0]
-    const address = '' // TODO: get public key
+    const address = '' // TODO: get address
 
     return { encryptionKey, address }
   }
