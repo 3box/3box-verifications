@@ -18,7 +18,7 @@ class EmailMgr {
     this.redis_host = secrets.REDIS_HOST
   }
 
-  async getUserName(address = undefined) {
+  async getUserName (address = undefined) {
     if (address) {
       try {
         const res = await fetch(`https://ipfs.3box.io/profile?address=${address}`)
@@ -33,7 +33,22 @@ class EmailMgr {
     return 'there 👋'
   }
 
-  async sendEmail({email, content}) {
+  async getUserNameFromDID (did = undefined) {
+    if (address) {
+      try {
+        const res = await fetch(`https://ipfs.3box.io/profile?did=${did}`)
+        let profile = await res.json()
+        return `${profile.name} ${profile.emoji}`
+      } catch (error) {
+        console.log('error trying to get profile', error)
+      }
+    }
+
+    // Default case, just be friendly
+    return 'there 👋'
+  }
+
+  async sendEmail ({ email, content }) {
     const params = {
       Destination: {
         ToAddresses: [email]
@@ -97,7 +112,7 @@ class EmailMgr {
       code: code
     })
 
-    return this.sendEmail({email, content})
+    return this.sendEmail({ email, content })
   }
 
   async verify (did, userCode) {

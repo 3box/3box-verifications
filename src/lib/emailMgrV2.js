@@ -26,14 +26,14 @@ class EmailMgrV2 extends EmailMgr {
 
     const ts = (new Date()).getTime()
     const code = this.generateCode()
-    const { encryptionKey, address } = this.getDIDDetails(did)
+    const encryptionKey = this.getDIDDetails(did)
 
     const hashedCode = this.hashCode(code)
     const { nonce, ciphertext, publicKey } = this.encryptCode(encryptionKey, code)
 
     await this.storeSession({ did, email, hashedCode, ts })
 
-    const name = await this.getUserName(address)
+    const name = await this.getUserNameFromDID(did)
 
     // Prepare the payload
     const payloadStr = JSON.stringify({ nonce, ciphertext, publicKey })
@@ -65,6 +65,7 @@ class EmailMgrV2 extends EmailMgr {
     try {
       const session = await this.getStoredSession(did)
       const hashedCode = this.hashCode(code)
+
       // TODO: we should verify the claim from the user somehow
 
       const now = (new Date()).getTime()
@@ -117,10 +118,7 @@ class EmailMgrV2 extends EmailMgr {
       throw new Error(`Invalid number of encryption key in the did doc: ${encryptionKeys}`)
     }
 
-    const encryptionKey = encryptionKeys[0]
-    const address = '' // TODO: get address
-
-    return { encryptionKey, address }
+    return encryptionKeys[0]
   }
 
   storeSession ({ did, email, hashedCode, ts }) {
