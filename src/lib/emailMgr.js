@@ -18,39 +18,22 @@ class EmailMgr {
     this.redis_host = secrets.REDIS_HOST
   }
 
-  async sendVerification (email, did, address) {
-    if (!email) throw new Error('no email')
-    const code = this.generateCode()
-    await this.storeCode(email, code)
-    await this.storeDid(email, did)
-    let name = 'there 👋'
+  async getUserName(address = undefined) {
     if (address) {
       try {
         const res = await fetch(`https://ipfs.3box.io/profile?address=${address}`)
         let profile = await res.json()
-        name = `${profile.name} ${profile.emoji}`
+        return `${profile.name} ${profile.emoji}`
       } catch (error) {
         console.log('error trying to get profile', error)
       }
     }
 
-    const template = data =>
-      `<!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        </head>
-        <body>
-            <p>Hi ${data.name},<br /></p>
-            <p>To complete the verification of this email address, enter the six digit code found below into the 3Box app: </p>
-            <p><span style="color:#B03A2E;font-weight:bold">${data.code}</span></p>
-            <p>This code will expire in 12 hours. If you do not successfully verify your email before then, you will need to
-              restart the process.</p>
-            <p>If you believe that you have received this message in error, please email support@3box.io.</p>
-        </body>
-        </html>`
+    // Default case, just be friendly
+    return 'there 👋'
+  }
 
+  async sendEmail({email, content}) {
     const params = {
       Destination: {
         ToAddresses: [email]
@@ -59,10 +42,7 @@ class EmailMgr {
         Body: {
           Html: {
             Charset: 'UTF-8',
-            Data: template({
-              name: name,
-              code: code
-            })
+            Data: content
           }
         },
         Subject: {
@@ -84,6 +64,40 @@ class EmailMgr {
       .catch(err => {
         console.log(err)
       })
+  }
+
+  async sendVerification (email, did, address) {
+    if (!email) throw new Error('no email')
+
+    const code = this.generateCode()
+    await this.storeCode(email, code)
+    await this.storeDid(email, did)
+
+    const name = await this.getUserName(address)
+
+    const template = data =>
+      `<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        </head>
+        <body>
+            <p>Hi ${data.name},<br /></p>
+            <p>To complete the verification of this email address, enter the six digit code found below into the 3Box app: </p>
+            <p><span style="color:#B03A2E;font-weight:bold">${data.code}</span></p>
+            <p>This code will expire in 12 hours. If you do not successfully verify your email before then, you will need to
+              restart the process.</p>
+            <p>If you believe that you have received this message in error, please email support@3box.io.</p>
+        </body>
+        </html>`
+
+    const content = template({
+      name: name,
+      code: code
+    })
+
+    return this.sendEmail({email, content})
   }
 
   async verify (did, userCode) {
