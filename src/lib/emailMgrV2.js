@@ -1,5 +1,7 @@
 const resolve = require('did-resolver')
 const registerResolver = require('muport-did-resolver')
+const Multihash = require('multihashes')
+const sha256 = require('js-sha256').sha256
 const EmailMgr = require('./emailMgr')
 const { RedisStore } = require('./store')
 
@@ -76,7 +78,8 @@ class EmailMgrV2 extends EmailMgr {
   }
 
   hashCode (code) {
-    // TODO: return the hashed code
+    const digest = Buffer.from(sha256.digest(code))
+    return Multihash.encode(digest, 'sha2-256').toString('hex')
   }
 
   async getDIDDetails (did) {
