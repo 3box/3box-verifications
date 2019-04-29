@@ -5,6 +5,8 @@ const { RedisStore } = require('./store')
 
 registerResolver()
 
+const SESSION_TTL = 1000 * 3600 * 12 // 12 hours in ms
+
 /**
  * Overrides the regular EmailMgr and tooling
  * to provide the special behavior of the new API.
@@ -19,12 +21,12 @@ class EmailMgrV2 extends EmailMgr {
 
     const ts = (new Date()).getTime()
     const code = this.generateCode()
-    const {publicKey, address} = this.getDIDDetails(did)
+    const { publicKey, address } = this.getDIDDetails(did)
 
     const hashedCode = this.hashCode(code)
     const encryptedCode = this.encryptCode(publicKey, code)
 
-    await this.storeSession({did, email, hashedCode, ts})
+    await this.storeSession({ did, email, hashedCode, ts })
 
     const name = await this.getUserName(address)
     const url = `https://accounts.3box.io/verify-email?code=${encryptedCode}`
@@ -46,32 +48,64 @@ class EmailMgrV2 extends EmailMgr {
         </body>
         </html>`
 
-    return this.sendEmail({email, content})
+    return this.sendEmail({ email, content })
   }
 
-  encryptCode(publicKey, code) {
+  async verify (did, userCode) {
+    try {
+      const session = await this.getStoredSession(did)
+      const hashedCode = this.hashCode(code)
+      // TODO: we should verify the claim from the user somehow
+
+      const now = (new Date()).getTime()
+
+      if (now + SESSION_TTL > session.ts) {
+        return null
+      } else if (hashedCode === session.hashedCode) {
+        return session.email
+      } else {
+        return null
+      }
+    } catch (e) {
+      console.log('error while trying to retrieve the code', e.message)
+    }
+  }
+
+  encryptCode (publicKey, code) {
     // TODO: use the public key of our user to encrypt the code
   }
 
-  hashCode(code) {
+  hashCode (code) {
     // TODO: return the hashed code
   }
 
-  async getDIDDetails(did) {
+  async getDIDDetails (did) {
     const doc = await resolve(did)
 
     // TODO: return the did content (public key and address)
     // TODO: which key should we use?
   }
 
-  storeSession({did, email, hashedCode, ts}) {
+  storeSession ({ did, email, hashedCode, ts }) {
     // TODO: store the session info in redis
     this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
     try {
-      const content = JSON.stringify({email, hashedCode, ts})
+      const content = JSON.stringify({ email, hashedCode, ts })
       this.redisStore.write(`v2:${did}`, content)
     } catch (e) {
       console.log('error while trying to store the code', e.message)
+    } finally {
+      this.redisStore.quit()
+    }
+  }
+
+  async getStoredSession (did) {
+    this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
+    try {
+      const session = await this.redisStore.read(`v2:${did}`)
+      return JSON.parse(session)
+    } catch (e) {
+      console.log('error while trying to retrieve the session content', e.message)
     } finally {
       this.redisStore.quit()
     }

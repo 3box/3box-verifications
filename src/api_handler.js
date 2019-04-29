@@ -99,17 +99,12 @@ module.exports.email_verify = (event, context, callback) => {
   preHandler(emailVerifyHandler, event, context, callback)
 }
 
+let emailVerifyHandlerV2 = new EmailVerifyHandler(emailMgrV2, claimMgr)
+module.exports.v2_finalize_email_verification = (event, context, callback) => {
+  preHandler(emailVerifyHandlerV2, event, context, callback)
+}
+
 let didDocumentHandler = new DidDocumentHandler(claimMgr)
 module.exports.diddoc = (event, context, callback) => {
   preHandler(didDocumentHandler, event, context, callback)
-}
-
-
-module.exports.v2_finalize_email_verification = (event, context, callback) => {
-  /**
-   * {
-   *   verification: <the input-verification-claim signed by the did of the user>
-   * }
-   * https://www.notion.so/threebox/Onboarding-2-5-spec-d11470694816404196a772b55d5c56e4#2cafde58196a492f8650bb2e56ab4cdd
-   */
 }

@@ -148,7 +148,7 @@ class EmailMgr {
       email = await this.redisStore.read(did)
       storedCode = await this.redisStore.read(email)
     } catch (e) {
-      console.log('error while trying to store the did', e.message)
+      console.log('error while trying to retrieve the stored code', e.message)
     } finally {
       this.redisStore.quit()
     }
