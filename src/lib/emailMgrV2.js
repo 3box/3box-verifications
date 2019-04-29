@@ -88,9 +88,7 @@ class EmailMgrV2 extends EmailMgr {
     const nonce = nacl.randomBytes(24)
     const toPublic = nacl.util.decodeBase64(encryptionKey.publicKeyBase64)
 
-    if (typeof code === 'string') {
-      code = nacl.util.decodeUTF8(code)
-    }
+    code = nacl.util.decodeUTF8('' + code)
 
     const ephemeralKeyPair = nacl.box.keyPair()
 
@@ -101,6 +99,11 @@ class EmailMgrV2 extends EmailMgr {
       ciphertext: nacl.util.encodeBase64(ciphertext),
       publicKey: ephemeralKeyPair.publicKey
     }
+  }
+
+  generateCode () {
+    // Cast to string to simplify encoding, ciphering, and storage
+    return '' + super.generateCode()
   }
 
   hashCode (code) {
