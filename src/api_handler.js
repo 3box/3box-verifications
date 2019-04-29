@@ -8,11 +8,13 @@ const DidDocumentHandler = require('./api/diddoc')
 
 const TwitterMgr = require('./lib/twitterMgr')
 const EmailMgr = require('./lib/emailMgr')
+const EmailMgrV2 = require('./lib/emailMgrV2')
 const ClaimMgr = require('./lib/claimMgr')
 
 let twitterMgr = new TwitterMgr()
 let claimMgr = new ClaimMgr()
 let emailMgr = new EmailMgr()
+let emailMgrV2 = new EmailMgrV2()
 
 const doHandler = (handler, event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false
@@ -87,7 +89,7 @@ module.exports.email_send = (event, context, callback) => {
   preHandler(emailSendHandler, event, context, callback)
 }
 
-let emailSendHandlerV2 = new EmailSendHandler(emailMgr, false)
+let emailSendHandlerV2 = new EmailSendHandler(emailMgrV2, false)
 module.exports.v2_start_email_verification = (event, context, callback) => {
   preHandler(emailSendHandlerV2, event, context, callback)
 }
