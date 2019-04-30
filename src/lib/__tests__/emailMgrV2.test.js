@@ -7,13 +7,16 @@ const DID_LAURENT = 'did:muport:Qmb9E8wLqjfAqfKhideoApU5g26Yz2Q2bSp6MSZmc5WrNr'
 describe('EmailMgrV2', () => {
   let sut
 
-  let mockResponse = {
+  let MOCK_RESPONSE = {
     ResponseMetadata: { RequestId: '6c4b41b4-24c1-11e9-a415-efc225a7e54a' },
     MessageId: '01010168a0230a86-0e8ba89b-3339-4979-a138-d036e959192d-000000'
   }
-  AWS.mock('SES', 'sendEmail', function (params, callback) {
-    callback(null, mockResponse)
+
+  const sendMailSpy = jest.fn((params, callback) => {
+    callback(null, MOCK_RESPONSE)
   })
+
+  AWS.mock('SES', 'sendEmail', sendMailSpy)
 
   beforeAll(() => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
@@ -28,7 +31,8 @@ describe('EmailMgrV2', () => {
       publicKeyBase64: 'uYGr6nD/c/2hQ3hNFrWUWAdlNoelPqduYyyafrALf2U='
     }
 
-    const payload = sut.encryptCode(encryptionKey, 4242)
+    const payload = sut.encryptCode(encryptionKey, '4242')
+
     expect(payload).toBeTruthy()
     expect(payload.nonce).toBeTruthy()
     expect(payload.ciphertext).toBeTruthy()
@@ -37,6 +41,7 @@ describe('EmailMgrV2', () => {
 
   test('verify hashCode', () => {
     const code = sut.generateCode()
+
     const hash = sut.hashCode(code)
 
     expect(hash).toBeTruthy()
@@ -57,6 +62,7 @@ describe('EmailMgrV2', () => {
 
   test('retrieve keys from a DID', async () => {
     const doc = await sut.getEncryptionKeyFromDID(DID_LAURENT)
+
     expect(doc).toBeTruthy()
     expect(doc.publicKeyBase64).toBeTruthy()
     expect(doc.type).toBeTruthy()
@@ -71,6 +77,25 @@ describe('EmailMgrV2', () => {
     expect(code.nonce).toBeTruthy()
     expect(code.ciphertext).toBeTruthy()
     expect(code.publicKey).toBeTruthy()
+  })
+
+  test('send Verification', async () => {
+    // Act
+    await sut.sendVerification('my@email.com', DID_LAURENT)
+
+    // Assert
+    const call = sendMailSpy.mock.calls[0]
+    const content = call[0].Message.Body.Html.Data
+
+    expect(sendMailSpy.mock.calls.length).toEqual(1)
+    expect(content).toBeTruthy()
+    expect(content).toContain('To complete the verification')
+
+    const match = content.match(/href="(.*)?code=(.*)"/)
+
+    expect(match).toBeTruthy()
+    expect(match[1]).toContain('accounts.3box.io')
+    expect(match[2]).toBeTruthy()
   })
 
   afterAll(() => {

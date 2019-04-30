@@ -34,7 +34,7 @@ class EmailMgr {
   }
 
   async getUserNameFromDID (did = undefined) {
-    if (address) {
+    if (did) {
       try {
         const res = await fetch(`https://ipfs.3box.io/profile?did=${did}`)
         let profile = await res.json()

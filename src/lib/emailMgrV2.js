@@ -28,7 +28,7 @@ class EmailMgrV2 extends EmailMgr {
 
     const ts = (new Date()).getTime()
     const code = this.generateCode()
-    const encryptionKey = this.getEncryptionKeyFromDID(did)
+    const encryptionKey = await this.getEncryptionKeyFromDID(did)
 
     const hashedCode = this.hashCode(code)
     const { nonce, ciphertext, publicKey } = this.encryptCode(encryptionKey, code)
@@ -39,7 +39,7 @@ class EmailMgrV2 extends EmailMgr {
 
     // Prepare the payload
     const payloadStr = JSON.stringify({ nonce, ciphertext, publicKey })
-    const payload = nacl.util.encodeBase64(nacl.utils.decodeUTF8(payloadStr))
+    const payload = nacl.util.encodeBase64(nacl.util.decodeUTF8(payloadStr))
 
     const url = `https://accounts.3box.io/verify-email?code=${payload}`
 
