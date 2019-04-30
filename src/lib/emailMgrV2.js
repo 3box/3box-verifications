@@ -28,7 +28,7 @@ class EmailMgrV2 extends EmailMgr {
 
     const ts = (new Date()).getTime()
     const code = this.generateCode()
-    const encryptionKey = this.getDIDDetails(did)
+    const encryptionKey = this.getEncryptionKeyFromDID(did)
 
     const hashedCode = this.hashCode(code)
     const { nonce, ciphertext, publicKey } = this.encryptCode(encryptionKey, code)
@@ -111,13 +111,13 @@ class EmailMgrV2 extends EmailMgr {
     return Multihash.encode(digest, 'sha2-256').toString('hex')
   }
 
-  async getDIDDetails (did) {
+  async getEncryptionKeyFromDID (did) {
     const doc = await resolve(did)
 
     const publicKeys = doc.publicKey
-    const encryptionKeys = publicKeys.filter(x => {
+    const encryptionKeys = publicKeys.filter(x => (
       x.id.endsWith(ENCRYPTION_KEY_SUFFIX)
-    })
+    ))
 
     if (encryptionKeys.length !== 1) {
       throw new Error(`Invalid number of encryption key in the did doc: ${encryptionKeys}`)

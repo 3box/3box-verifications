@@ -2,6 +2,8 @@ const EmailMgrV2 = require('../emailMgrV2')
 const AWS = require('aws-sdk-mock')
 const NullStore = require('../store').NullStore
 
+const DID_LAURENT = 'did:muport:Qmb9E8wLqjfAqfKhideoApU5g26Yz2Q2bSp6MSZmc5WrNr'
+
 describe('EmailMgrV2', () => {
   let store
   let sut
@@ -47,6 +49,36 @@ describe('EmailMgrV2', () => {
 
     expect(hash).toBeTruthy()
     expect(hash).not.toEqual(code)
+  })
+
+  test('verify session', async () => {
+    // Arrange
+    const session = { did: 'some-did', email: 'my@email.com', hashedCode: 'helloworld', ts: 123123 }
+    await sut.storeSession(session)
+
+    // Act
+    const retrieved = await sut.getStoredSession(session.did)
+
+    // Assert
+    expect({ did: session.did, ...retrieved }).toEqual(session)
+  })
+
+  test('retrieve keys from a DID', async () => {
+    const doc = await sut.getEncryptionKeyFromDID(DID_LAURENT)
+    expect(doc).toBeTruthy()
+    expect(doc.publicKeyBase64).toBeTruthy()
+    expect(doc.type).toBeTruthy()
+  })
+
+  test('encrypt code', async () => {
+    const key = await sut.getEncryptionKeyFromDID(DID_LAURENT)
+
+    const code = sut.encryptCode(key, '4242')
+
+    expect(code).toBeTruthy()
+    expect(code.nonce).toBeTruthy()
+    expect(code.ciphertext).toBeTruthy()
+    expect(code.publicKey).toBeTruthy()
   })
 
   afterAll(() => {
