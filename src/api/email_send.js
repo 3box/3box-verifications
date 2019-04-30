@@ -1,8 +1,8 @@
 class EmailSendHandler {
-  constructor (emailMgr, allowAddress = true) {
+  constructor (emailMgr, isV2 = false) {
     this.name = 'EmailSendHandler'
     this.emailMgr = emailMgr
-    this.allowAddress = allowAddress // This is used to differentiate between old and new API
+    this.isV2 = isV2
   }
 
   async handle (event, context, cb) {
@@ -23,12 +23,11 @@ class EmailSendHandler {
       return
     }
 
-    let verificationCode = ''
     try {
       if (!body.address) {
-        verificationCode = await this.emailMgr.sendVerification(body.email_address, body.did, null)
-      } else if (this.allowAddress) {
-        verificationCode = await this.emailMgr.sendVerification(body.email_address, body.did, body.address)
+        await this.emailMgr.sendVerification(body.email_address, body.did, null)
+      } else if (!this.isV2) {
+        await this.emailMgr.sendVerification(body.email_address, body.did, body.address)
       } else {
         cb({ code: 400, message: 'adress is not allowed' })
         return
@@ -37,7 +36,13 @@ class EmailSendHandler {
       cb({ code: 500, message: 'error while trying to send the verification code' })
       return
     }
-    cb(null)
+
+    if (this.isV2) {
+      cb(null, { status: 'success' })
+    } else {
+      cb(null)
+    }
   }
 }
+
 module.exports = EmailSendHandler
