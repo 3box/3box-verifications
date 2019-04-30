@@ -5,11 +5,7 @@ const NullStore = require('../store').NullStore
 const DID_LAURENT = 'did:muport:Qmb9E8wLqjfAqfKhideoApU5g26Yz2Q2bSp6MSZmc5WrNr'
 
 describe('EmailMgrV2', () => {
-  let store
   let sut
-  let userEmail
-  let userDid
-  let userName
 
   let mockResponse = {
     ResponseMetadata: { RequestId: '6c4b41b4-24c1-11e9-a415-efc225a7e54a' },
@@ -21,11 +17,7 @@ describe('EmailMgrV2', () => {
 
   beforeAll(() => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
-    store = new NullStore()
-    sut = new EmailMgrV2(store)
-    userEmail = 'mollie@3box.io'
-    userDid = 'did:3:sample did'
-    userName = 'Mollie the Narwhal'
+    sut = new EmailMgrV2(NullStore)
   })
 
   test('verify encryptCode', () => {

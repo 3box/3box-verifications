@@ -3,7 +3,6 @@ const AWS = require('aws-sdk-mock')
 const NullStore = require('../store').NullStore
 
 describe('EmailMgr', () => {
-  let store
   let sut
   let userEmail
   let userDid
@@ -19,8 +18,7 @@ describe('EmailMgr', () => {
 
   beforeAll(() => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
-    store = new NullStore()
-    sut = new EmailMgr(store)
+    sut = new EmailMgr(NullStore)
     userEmail = 'mollie@3box.io'
     userDid = 'did:3:sample did'
     userName = 'Mollie the Narwhal'

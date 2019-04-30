@@ -127,27 +127,28 @@ class EmailMgrV2 extends EmailMgr {
   }
 
   storeSession ({ did, email, hashedCode, ts }) {
-    // TODO: store the session info in redis
-    this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
+    const store = new this.storeClass({ host: this.storeHost, port: 6379 })
+
     try {
       const content = JSON.stringify({ email, hashedCode, ts })
-      this.redisStore.write(`v2:${did}`, content)
+      store.write(`v2:${did}`, content)
     } catch (e) {
       console.log('error while trying to store the code', e.message)
     } finally {
-      this.redisStore.quit()
+      store.quit()
     }
   }
 
   async getStoredSession (did) {
-    this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
+    const store = new this.storeClass({ host: this.storeHost, port: 6379 })
+
     try {
-      const session = await this.redisStore.read(`v2:${did}`)
+      const session = await store.read(`v2:${did}`)
       return JSON.parse(session)
     } catch (e) {
       console.log('error while trying to retrieve the session content', e.message)
     } finally {
-      this.redisStore.quit()
+      store.quit()
     }
   }
 }

@@ -3,19 +3,19 @@ const { RedisStore, NullStore } = require('./store')
 const fetch = require('node-fetch')
 
 class EmailMgr {
-  constructor (store = new NullStore()) {
+  constructor (storeClass = RedisStore) {
     AWS.config.update({ region: 'us-west-2' })
     this.ses = new AWS.SES()
-    this.redis_host = null
-    this.redisStore = store
+    this.storeHost = null
+    this.storeClass = storeClass
   }
 
   isSecretsSet () {
-    return (this.redis_host !== null)
+    return (this.storeHost !== null)
   }
 
   setSecrets (secrets) {
-    this.redis_host = secrets.REDIS_HOST
+    this.storeHost = secrets.REDIS_HOST
   }
 
   async getUserName (address = undefined) {
@@ -134,38 +134,40 @@ class EmailMgr {
   }
 
   async storeCode (email, code) {
-    this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
+    const store = new this.storeClass({ host: this.storeHost, port: 6379 })
     try {
-      this.redisStore.write(email, code)
+      store.write(email, code)
     } catch (e) {
       console.log('error while trying to store the code', e.message)
     } finally {
-      this.redisStore.quit()
+      store.quit()
     }
   }
 
   async storeDid (email, did) {
-    this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
+    const store = new this.storeClass({ host: this.storeHost, port: 6379 })
     try {
-      this.redisStore.write(did, email)
+      store.write(did, email)
     } catch (e) {
       console.log('error while trying to store the did', e.message)
     } finally {
-      this.redisStore.quit()
+      store.quit()
     }
   }
 
   async getStoredCode (did) {
     let email
     let storedCode
-    this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
+
+    const store = new this.storeClass({ host: this.storeHost, port: 6379 })
+
     try {
-      email = await this.redisStore.read(did)
-      storedCode = await this.redisStore.read(email)
+      email = await store.read(did)
+      storedCode = await store.read(email)
     } catch (e) {
       console.log('error while trying to retrieve the stored code', e.message)
     } finally {
-      this.redisStore.quit()
+      store.quit()
     }
     return { email, storedCode }
   }
