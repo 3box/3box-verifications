@@ -63,7 +63,7 @@ describe('EmailSendHandler', () => {
       {},
       (err, res) => {
         expect(err).toBeNull()
-        expect(res).toBeUndefined()
+        expect(res).toBeDefined()
         done()
       }
     )
@@ -80,7 +80,7 @@ describe('EmailSendHandler', () => {
       {},
       (err, res) => {
         expect(err).toBeNull()
-        expect(res).toBeUndefined()
+        expect(res).toBeDefined()
         done()
       }
     )

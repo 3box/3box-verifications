@@ -37,11 +37,7 @@ class EmailSendHandler {
       return
     }
 
-    if (this.isV2) {
-      cb(null, { status: 'success' })
-    } else {
-      cb(null)
-    }
+    cb(null, { status: 'success' })
   }
 }
 
