@@ -5,11 +5,8 @@ const registerResolver = require('muport-did-resolver')
 const Multihash = require('multihashes')
 const sha256 = require('js-sha256').sha256
 const EmailMgr = require('./emailMgr')
-const { RedisStore } = require('./store')
-const IPFS = require('ipfs-mini')
 
-const IPFS_NODE = new IPFS({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' })
-registerResolver(IPFS_NODE)
+registerResolver()
 
 const SESSION_TTL = 1000 * 3600 * 12 // 12 hours in ms
 const ENCRYPTION_KEY_SUFFIX = '#encryptionKey'
