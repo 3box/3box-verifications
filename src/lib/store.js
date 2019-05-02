@@ -39,15 +39,22 @@ class RedisStore {
  *  NullStore implements an abstract store interface without caching any
  *  data. Primarly used for testing and development.
  */
+const NULL_STORE_DATA = {}
 
 class NullStore {
   read (key) {
-    return Promise.resolve(null)
+    return Promise.resolve(NULL_STORE_DATA[key] || null)
   }
 
-  write (key, obj) {}
+  write (key, obj) {
+    NULL_STORE_DATA[key] = obj
+    return Promise.resolve(true)
+  }
 
-  invalidate (key) {}
+  invalidate (key) {
+    delete NULL_STORE_DATA[key]
+    return Promise.resolve(true)
+  }
 
   quit () {}
 }

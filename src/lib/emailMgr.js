@@ -3,54 +3,52 @@ const { RedisStore, NullStore } = require('./store')
 const fetch = require('node-fetch')
 
 class EmailMgr {
-  constructor (store = new NullStore()) {
+  constructor (storeClass = RedisStore) {
     AWS.config.update({ region: 'us-west-2' })
     this.ses = new AWS.SES()
-    this.redis_host = null
-    this.redisStore = store
+    this.storeHost = null
+    this.storeClass = storeClass
   }
 
   isSecretsSet () {
-    return (this.redis_host !== null)
+    return (this.storeHost !== null)
   }
 
   setSecrets (secrets) {
-    this.redis_host = secrets.REDIS_HOST
+    this.storeHost = secrets.REDIS_HOST
   }
 
-  async sendVerification (email, did, address) {
-    if (!email) throw new Error('no email')
-    const code = this.generateCode()
-    await this.storeCode(email, code)
-    await this.storeDid(email, did)
-    let name = 'there 👋'
+  async getUserName (address = undefined) {
     if (address) {
       try {
         const res = await fetch(`https://ipfs.3box.io/profile?address=${address}`)
         let profile = await res.json()
-        name = `${profile.name} ${profile.emoji}`
+        return `${profile.name} ${profile.emoji}`
       } catch (error) {
         console.log('error trying to get profile', error)
       }
     }
 
-    const template = data =>
-      `<!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        </head>
-        <body>
-            <p>Hi ${data.name},<br /></p>
-            <p>To complete the verification of this email address, enter the six digit code found below into the 3Box app: </p>
-            <p><span style="color:#B03A2E;font-weight:bold">${data.code}</span></p>
-            <p>This code will expire in 12 hours. If you do not successfully verify your email before then, you will need to
-              restart the process.</p>
-            <p>If you believe that you have received this message in error, please email support@3box.io.</p>
-        </body>
-        </html>`
+    // Default case, just be friendly
+    return 'there 👋'
+  }
 
+  async getUserNameFromDID (did = undefined) {
+    if (did) {
+      try {
+        const res = await fetch(`https://ipfs.3box.io/profile?did=${did}`)
+        let profile = await res.json()
+        return `${profile.name} ${profile.emoji}`
+      } catch (error) {
+        console.log('error trying to get profile', error)
+      }
+    }
+
+    // Default case, just be friendly
+    return 'there 👋'
+  }
+
+  async sendEmail ({ email, content }) {
     const params = {
       Destination: {
         ToAddresses: [email]
@@ -59,10 +57,7 @@ class EmailMgr {
         Body: {
           Html: {
             Charset: 'UTF-8',
-            Data: template({
-              name: name,
-              code: code
-            })
+            Data: content
           }
         },
         Subject: {
@@ -86,6 +81,40 @@ class EmailMgr {
       })
   }
 
+  async sendVerification (email, did, address) {
+    if (!email) throw new Error('no email')
+
+    const code = this.generateCode()
+    await this.storeCode(email, code)
+    await this.storeDid(email, did)
+
+    const name = await this.getUserName(address)
+
+    const template = data =>
+      `<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        </head>
+        <body>
+            <p>Hi ${data.name},<br /></p>
+            <p>To complete the verification of this email address, enter the six digit code found below into the 3Box app: </p>
+            <p><span style="color:#B03A2E;font-weight:bold">${data.code}</span></p>
+            <p>This code will expire in 12 hours. If you do not successfully verify your email before then, you will need to
+              restart the process.</p>
+            <p>If you believe that you have received this message in error, please email support@3box.io.</p>
+        </body>
+        </html>`
+
+    const content = template({
+      name: name,
+      code: code
+    })
+
+    return this.sendEmail({ email, content })
+  }
+
   async verify (did, userCode) {
     try {
       const res = await this.getStoredCode(did)
@@ -105,38 +134,40 @@ class EmailMgr {
   }
 
   async storeCode (email, code) {
-    this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
+    const store = new this.storeClass({ host: this.storeHost, port: 6379 })
     try {
-      this.redisStore.write(email, code)
+      store.write(email, code)
     } catch (e) {
       console.log('error while trying to store the code', e.message)
     } finally {
-      this.redisStore.quit()
+      store.quit()
     }
   }
 
   async storeDid (email, did) {
-    this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
+    const store = new this.storeClass({ host: this.storeHost, port: 6379 })
     try {
-      this.redisStore.write(did, email)
+      store.write(did, email)
     } catch (e) {
       console.log('error while trying to store the did', e.message)
     } finally {
-      this.redisStore.quit()
+      store.quit()
     }
   }
 
   async getStoredCode (did) {
     let email
     let storedCode
-    this.redisStore = new RedisStore({ host: this.redis_host, port: 6379 })
+
+    const store = new this.storeClass({ host: this.storeHost, port: 6379 })
+
     try {
-      email = await this.redisStore.read(did)
-      storedCode = await this.redisStore.read(email)
+      email = await store.read(did)
+      storedCode = await store.read(email)
     } catch (e) {
-      console.log('error while trying to store the did', e.message)
+      console.log('error while trying to retrieve the stored code', e.message)
     } finally {
-      this.redisStore.quit()
+      store.quit()
     }
     return { email, storedCode }
   }

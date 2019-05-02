@@ -4,15 +4,18 @@ const AWS = require('aws-sdk')
 const TwitterHandler = require('./api/twitter')
 const EmailSendHandler = require('./api/email_send')
 const EmailVerifyHandler = require('./api/email_verify')
+const EmailVerifyHandlerV2 = require('./api/email_verify_v2')
 const DidDocumentHandler = require('./api/diddoc')
 
 const TwitterMgr = require('./lib/twitterMgr')
 const EmailMgr = require('./lib/emailMgr')
+const EmailMgrV2 = require('./lib/emailMgrV2')
 const ClaimMgr = require('./lib/claimMgr')
 
 let twitterMgr = new TwitterMgr()
 let claimMgr = new ClaimMgr()
 let emailMgr = new EmailMgr()
+let emailMgrV2 = new EmailMgrV2()
 
 const doHandler = (handler, event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false
@@ -87,9 +90,19 @@ module.exports.email_send = (event, context, callback) => {
   preHandler(emailSendHandler, event, context, callback)
 }
 
+let emailSendHandlerV2 = new EmailSendHandler(emailMgrV2, true)
+module.exports.v2_start_email_verification = (event, context, callback) => {
+  preHandler(emailSendHandlerV2, event, context, callback)
+}
+
 let emailVerifyHandler = new EmailVerifyHandler(emailMgr, claimMgr)
 module.exports.email_verify = (event, context, callback) => {
   preHandler(emailVerifyHandler, event, context, callback)
+}
+
+let emailVerifyHandlerV2 = new EmailVerifyHandlerV2(emailMgrV2, claimMgr)
+module.exports.v2_finalize_email_verification = (event, context, callback) => {
+  preHandler(emailVerifyHandlerV2, event, context, callback)
 }
 
 let didDocumentHandler = new DidDocumentHandler(claimMgr)
