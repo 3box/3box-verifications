@@ -16,8 +16,12 @@ describe('EmailVerifyHandler', () => {
     issueEmail: jest.fn()
   }
 
+  let analyticsMock = {
+      trackVerifyEmail: jest.fn()
+  }
+
   beforeAll(() => {
-    sut = new EmailVerifyHandler(emailMgrMock, claimMgrMock)
+    sut = new EmailVerifyHandler(emailMgrMock, claimMgrMock, analyticsMock)
   })
 
   test('empty constructor', () => {

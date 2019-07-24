@@ -9,10 +9,12 @@ const DidDocumentHandler = require('./api/diddoc')
 const TwitterMgr = require('./lib/twitterMgr')
 const EmailMgr = require('./lib/emailMgr')
 const ClaimMgr = require('./lib/claimMgr')
+const Analytics = require('./lib/analytics')
 
 let twitterMgr = new TwitterMgr()
 let claimMgr = new ClaimMgr()
 let emailMgr = new EmailMgr()
+const analytics = new Analytics()
 
 const doHandler = (handler, event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false
@@ -60,7 +62,7 @@ const doHandler = (handler, event, context, callback) => {
 }
 
 const preHandler = (handler, event, context, callback) => {
-  if (!twitterMgr.isSecretsSet() || !claimMgr.isSecretsSet() || !emailMgr.isSecretsSet()) {
+  if (!twitterMgr.isSecretsSet() || !claimMgr.isSecretsSet() || !emailMgr.isSecretsSet() || !analytics.isSecretsSet()) {
     const kms = new AWS.KMS()
     kms
       .decrypt({ CiphertextBlob: Buffer.from(process.env.SECRETS, 'base64') })
@@ -70,6 +72,7 @@ const preHandler = (handler, event, context, callback) => {
         twitterMgr.setSecrets(JSON.parse(decrypted))
         claimMgr.setSecrets(JSON.parse(decrypted))
         emailMgr.setSecrets(JSON.parse(decrypted))
+        analytics.setSecrets(JSON.parse(decrypted))
         doHandler(handler, event, context, callback)
       })
   } else {
@@ -77,17 +80,17 @@ const preHandler = (handler, event, context, callback) => {
   }
 }
 
-let twitterHandler = new TwitterHandler(twitterMgr, claimMgr)
+let twitterHandler = new TwitterHandler(twitterMgr, claimMgr, analytics)
 module.exports.twitter = (event, context, callback) => {
   preHandler(twitterHandler, event, context, callback)
 }
 
-let emailSendHandler = new EmailSendHandler(emailMgr)
+let emailSendHandler = new EmailSendHandler(emailMgr, analytics)
 module.exports.email_send = (event, context, callback) => {
   preHandler(emailSendHandler, event, context, callback)
 }
 
-let emailVerifyHandler = new EmailVerifyHandler(emailMgr, claimMgr)
+let emailVerifyHandler = new EmailVerifyHandler(emailMgr, claimMgr, analytics)
 module.exports.email_verify = (event, context, callback) => {
   preHandler(emailVerifyHandler, event, context, callback)
 }
