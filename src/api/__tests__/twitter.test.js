@@ -8,9 +8,12 @@ describe('TwitterHandler', () => {
   let claimMgrMock = {
     issueTwitter: jest.fn()
   }
+  let analyticsMock = {
+      trackVerifyTwitter: jest.fn()
+  }
 
   beforeAll(() => {
-    sut = new TwitterHandler(twitterMgrMock, claimMgrMock)
+    sut = new TwitterHandler(twitterMgrMock, claimMgrMock, analyticsMock)
   })
 
   test('empty constructor', () => {

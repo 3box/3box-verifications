@@ -30,6 +30,9 @@ jobs:
           name: deploy-to-serverless
           command: |
             sls package
+            if [ "${CIRCLE_BRANCH}" != "develop" ] && [ "${CIRCLE_BRANCH}" != "master" ]; then
+              exit 0
+            fi
             if [ "${CIRCLE_BRANCH}" == "develop" ]; then
               sls deploy --stage develop
             fi
