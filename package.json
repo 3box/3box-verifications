@@ -40,7 +40,7 @@
     "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.6.0",
     "jest": "^23.6.0",
-    "standard": "^14.0.0",
+    "standard": "^14.1.0",
     "serverless-offline": "^4.1.4"
   }
 }
