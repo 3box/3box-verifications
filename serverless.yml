@@ -59,6 +59,12 @@ functions:
   email_send:
     handler: src/api_handler.email_send
     timeout: 30
+    vpc:
+      securityGroupIds:
+        - sg-27907b55
+      subnetIds:
+        - subnet-731c3129
+        - subnet-f09fe3bb
     events:
       - http:
           method: post
@@ -68,6 +74,12 @@ functions:
   email_verify:
     handler: src/api_handler.email_verify
     timeout: 30
+    vpc:
+      securityGroupIds:
+        - sg-27907b55
+      subnetIds:
+        - subnet-731c3129
+        - subnet-f09fe3bb
     events:
       - http:
           method: post
