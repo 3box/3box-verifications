@@ -1,6 +1,6 @@
 {
   "name": "3box-verifications",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Verification service for 3Box",
   "main": "src/index.js",
   "scripts": {
