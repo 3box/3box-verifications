@@ -4,6 +4,12 @@ MockAWS.setSDKInstance(AWS)
 
 const apiHandler = require('../api_handler')
 
+jest.mock('ipfs-s3-dag-get', () => ({
+  initIPFS: async () => {
+      return 'ipfs'
+    }
+}))
+
 describe('apiHandler', () => {
   beforeAll(() => {
     // this keypair is a test one, not a secret really
@@ -15,6 +21,8 @@ describe('apiHandler', () => {
     }
     MockAWS.mock('KMS', 'decrypt', Promise.resolve({ Plaintext: JSON.stringify(secrets) }))
     process.env.SECRETS = secrets
+    process.env.IPFS_PATH = '/ipfs'
+    process.env.AWS_BUCKET_NAME = 'bucket'
   })
 
   test('twitter', done => {

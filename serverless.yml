@@ -34,6 +34,8 @@ provider:
 
   environment:
       SECRETS: ${self:custom.kmsSecrets.secrets.SECRETS}
+      IPFS_PATH: /ipfs
+      AWS_BUCKET_NAME: ipfs-bucket-test.3box.io
 
 # Enable auto-packing of external modules
 custom:

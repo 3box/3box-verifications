@@ -61,6 +61,11 @@ const doHandler = (handler, event, context, callback) => {
   })
 }
 
+// Allow some env vars to overwrite KMS
+const envConfig = {}
+if (process.env.IPFS_PATH) envConfig['IPFS_PATH'] = process.env.IPFS_PATH
+if (process.env.AWS_BUCKET_NAME) envConfig['AWS_BUCKET_NAME'] = process.env.AWS_BUCKET_NAME
+
 const preHandler = (handler, event, context, callback) => {
   if (!twitterMgr.isSecretsSet() || !claimMgr.isSecretsSet() || !emailMgr.isSecretsSet() || !analytics.isSecretsSet()) {
     const kms = new AWS.KMS()
@@ -69,10 +74,12 @@ const preHandler = (handler, event, context, callback) => {
       .promise()
       .then(data => {
         const decrypted = String(data.Plaintext)
-        twitterMgr.setSecrets(JSON.parse(decrypted))
-        claimMgr.setSecrets(JSON.parse(decrypted))
-        emailMgr.setSecrets(JSON.parse(decrypted))
-        analytics.setSecrets(JSON.parse(decrypted))
+        const config = Object.assign(decrypted, envConfig)
+        twitterMgr.setSecrets(JSON.parse(config))
+        emailMgr.setSecrets(JSON.parse(config))
+        analytics.setSecrets(JSON.parse(config))
+        return claimMgr.setSecrets(JSON.parse(config))
+      }).then(res => {
         doHandler(handler, event, context, callback)
       })
   } else {

@@ -61,7 +61,7 @@ describe('EmailVerifyHandler', () => {
         }
       }
     }
-    sut.claimMgr.decode = jest.fn(() => { return decodedJWT })
+    sut.claimMgr.verifyToken = jest.fn(() => { return Promise.resolve(decodedJWT) })
     sut.emailMgr.verify = jest.fn(() => { return Promise.resolve(null) })
     sut.handle(
       {
@@ -88,7 +88,7 @@ describe('EmailVerifyHandler', () => {
         }
       }
     }
-    sut.claimMgr.decode = jest.fn(() => { return decodedJWT })
+    sut.claimMgr.verifyToken = jest.fn(() => { return Promise.resolve(decodedJWT) })
     sut.emailMgr.verify = jest.fn(() => { return Promise.resolve(userEmail) })
     sut.claimMgr.issueEmail = jest.fn(() => { return Promise.resolve(sampleOutputJWT) })
     sut.handle(
