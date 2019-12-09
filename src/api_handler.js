@@ -74,11 +74,11 @@ const preHandler = (handler, event, context, callback) => {
       .promise()
       .then(data => {
         const decrypted = String(data.Plaintext)
-        const config = Object.assign(decrypted, envConfig)
-        twitterMgr.setSecrets(JSON.parse(config))
-        emailMgr.setSecrets(JSON.parse(config))
-        analytics.setSecrets(JSON.parse(config))
-        return claimMgr.setSecrets(JSON.parse(config))
+        const config = Object.assign(JSON.parse(decrypted), envConfig)
+        twitterMgr.setSecrets(config)
+        emailMgr.setSecrets(config)
+        analytics.setSecrets(config)
+        return claimMgr.setSecrets(config)
       }).then(res => {
         doHandler(handler, event, context, callback)
       })

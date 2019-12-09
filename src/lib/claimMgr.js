@@ -16,7 +16,7 @@ class ClaimMgr {
   }
 
   isSecretsSet () {
-    return ( this.ipfs !== null && (this.signerPrivate !== null || this.signerPublic !== null))
+    return (this.ipfs !== null && this.signerPrivate !== null && this.signerPublic !== null)
   }
 
   async setSecrets (secrets) {
