@@ -25,7 +25,8 @@ class EmailVerifyHandler {
     let verificationClaim
     let did
     try {
-      decodedJWT = this.claimMgr.decode(body.verification).payload
+      const verified = await this.claimMgr.verifyToken(body.verification)
+      decodedJWT = verified.payload
       did = decodedJWT.iss
       let userCode = decodedJWT.claim.code
       let email = await this.emailMgr.verify(did, userCode)
