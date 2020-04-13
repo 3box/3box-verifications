@@ -1,4 +1,4 @@
-import { checkIsFromDashboard } from './utils';
+import { checkIsFromDashboard, saveClaimToDB } from './utils';
 
 class EmailVerifyHandler {
   constructor (emailMgr, claimMgr, analytics) {
@@ -16,7 +16,6 @@ class EmailVerifyHandler {
       cb({ code: 400, message: 'no json body: ' + e.toString() })
       return
     }
-    console.log('eventtttt', event)
     const isFromDashboard = checkIsFromDashboard(event.headers, body)
 
     if (!body.verification) {
@@ -29,31 +28,27 @@ class EmailVerifyHandler {
     let verificationClaim
     let did
     try {
-      console.log('received verification', body.verification)
       const verified = await this.claimMgr.verifyToken(body.verification)
-      console.log(' verification verified', verified)
       decodedJWT = verified.payload
-      console.log('payload', verified.payload)
       did = decodedJWT.iss
       let userCode = decodedJWT.claim.code
-      console.log('userCode', userCode)
       let email = await this.emailMgr.verify(did, userCode)
-      console.log('verification email', email)
       if (email) {
         try {
           verificationClaim = await this.claimMgr.issueEmail(did, email, userCode)
-          console.log('verificationClaim', verificationClaim)
         } catch (e) {
           cb({ code: 500, message: 'could not issue a verification claim' })
           this.analytics.trackVerifyEmail(did, 500)
           return
         }
 
-        // if (isFromDashboard) {
-        //   // save claim to user db
-        // } else {
+        if (isFromDashboard) {
+          // save claim to user db
+          const res = await saveClaimToDB(verificationClaim, did);
           cb(null, { verification: verificationClaim })
-        // }
+        } else {
+          cb(null, { verification: verificationClaim })
+        }
 
         this.analytics.trackVerifyEmail(did, 200)
       } else {
@@ -62,7 +57,7 @@ class EmailVerifyHandler {
         return
       }
     } catch (e) {
-      cb({ code: 500, message: 'error while verify the code given by the user' })
+      cb({ code: 500, message: `Error while verifying the code given by the user: ${e}` })
       this.analytics.trackVerifyEmail(did, 500)
     }
   }
