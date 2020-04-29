@@ -1,13 +1,8 @@
 const didJWT = require('did-jwt')
 import { initIPFS } from "ipfs-s3-dag-get"
-const register3idResolver = require('3id-resolver')
-const registerMuPortResolver = require("muport-did-resolver")
-
-// Register resolvers
-function register (ipfs) {
-  register3idResolver(ipfs)
-  registerMuPortResolver(ipfs)
-}
+const { Resolver } = require('did-resolver')
+const get3IdResolver = require('3id-resolver').getResolver
+const getMuportResolver = require("muport-did-resolver").getResolver
 
 class ClaimMgr {
   constructor () {
@@ -25,7 +20,10 @@ class ClaimMgr {
     const ipfsPath = secrets.IPFS_PATH
     const bucket = secrets.AWS_BUCKET_NAME
     this.ipfs = await initIPFS({ ipfsPath, bucket})
-    register(this.ipfs)
+    this.resolver = new Resolver({
+      ...get3IdResolver(this.ipfs),
+      ...getMuportResolver(this.ipfs)
+    })
   }
 
   async issueTwitter (did, handle, url) {
@@ -83,7 +81,7 @@ class ClaimMgr {
 
   async verifyToken(token) {
     if (!token) throw new Error("no token");
-    return didJWT.verifyJWT(token);
+    return didJWT.verifyJWT(token, { resolver: this.resolver });
   }
 }
 
