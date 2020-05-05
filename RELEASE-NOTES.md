@@ -1,5 +1,8 @@
 # Release Notes
 
+## v1.4.0 - 2020-05-01
+* chore: update did-resolver and did-jwt libraries
+
 ## v1.3.0 - 2019-12-11
 * feat: 3id support
 * fix: verify email jwt
