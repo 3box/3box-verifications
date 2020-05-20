@@ -44,6 +44,6 @@
     "babel-preset-env": "^1.6.0",
     "jest": "^23.6.0",
     "standard": "^14.0.0",
-    "serverless-offline": "^5.10.1"
+    "serverless-offline": "^6.1.6"
   }
 }
