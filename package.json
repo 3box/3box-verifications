@@ -42,7 +42,7 @@
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.6.0",
-    "jest": "^23.6.0",
+    "jest": "^26.0.1",
     "standard": "^14.0.0",
     "serverless-offline": "^5.10.1"
   }
