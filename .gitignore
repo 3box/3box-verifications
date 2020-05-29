@@ -9,3 +9,5 @@ jspm_packages
 .webpack
 coverage
 .DS_Store
+
+.idea
