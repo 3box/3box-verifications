@@ -166,3 +166,6 @@ The response data follows the [jsend](https://labs.omniti.com/labs/jsend) standa
   }
 }
 ```
+
+## Maintainers
+[@simonovic86](https://github.com/simonovic86)
