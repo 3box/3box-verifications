@@ -1,6 +1,6 @@
 {
   "name": "3box-verifications",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Verification service for 3Box",
   "main": "src/index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "analytics-node": "^3.4.0-beta.1",
     "aws-sdk": "^2.442.0",
     "did-jwt": "^4.2.0",
-    "ipfs-s3-dag-get": "^0.1.12",
+    "ipfs-s3-dag-get": "^0.2.0",
     "js-sha256": "^0.9.0",
     "muport-did-resolver": "^1.0.1",
     "node-fetch": "^2.3.0",
