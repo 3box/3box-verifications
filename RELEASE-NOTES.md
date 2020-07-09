@@ -1,4 +1,6 @@
 # Release Notes
+## v1.5.0 - 2020-07-09
+* feat: upgrade s3 ipfs repo, shard blockstore support
 
 ## v1.4.0 - 2020-05-01
 * chore: update did-resolver and did-jwt libraries
