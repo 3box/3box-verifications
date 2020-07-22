@@ -18,8 +18,7 @@ class ClaimMgr {
     this.signerPrivate = secrets.KEYPAIR_PRIVATE_KEY
     this.signerPublic = secrets.KEYPAIR_PUBLIC_KEY
     const ipfsPath = secrets.IPFS_PATH
-    // const bucket = secrets.AWS_BUCKET_NAME
-    const bucket = 'ipfs.3box.io'
+    const bucket = secrets.AWS_BUCKET_NAME
     const shardBlockstore = true
     this.ipfs = await initIPFS({ ipfsPath, bucket, shardBlockstore })
     this.resolver = new Resolver({

@@ -35,10 +35,13 @@ provider:
   environment:
       SECRETS: ${self:custom.kmsSecrets.secrets.SECRETS}
       IPFS_PATH: /ipfs
-      AWS_BUCKET_NAME: ipfs-bucket-test.3box.io
+      AWS_BUCKET_NAME: ${self:custom.awsBucketName.${self:provider.stage}}
 
 # Enable auto-packing of external modules
 custom:
+  awsBucketName:
+    develop: ipfs-dev.3box.io
+    master: ipfs.3box.io
   serverless-kms-secrets:
     secretsFile: kms-secrets.${opt:stage, self:provider.stage}.${opt:region, self:provider.region}.yml
   kmsSecrets: ${file(kms-secrets.${opt:stage, self:provider.stage}.${opt:region, self:provider.region}.yml)}
