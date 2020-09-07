@@ -32,7 +32,7 @@
     "serverless-webpack": "^5.3.4",
     "twit": "^2.2.11",
     "webpack": "^4.44.1",
-    "webpack-node-externals": "^2.5.0"
+    "webpack-node-externals": "^2.5.2"
   },
   "devDependencies": {
     "aws-sdk-mock": "^4.3.0",
