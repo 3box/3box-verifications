@@ -21,7 +21,7 @@
   "dependencies": {
     "3id-resolver": "^1.0.1",
     "analytics-node": "^3.4.0-beta.2",
-    "aws-sdk": "^2.757.0",
+    "aws-sdk": "^2.767.0",
     "did-jwt": "^4.5.1",
     "ipfs-s3-dag-get": "^0.2.0",
     "js-sha256": "^0.9.0",
