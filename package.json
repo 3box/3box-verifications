@@ -20,7 +20,7 @@
   "homepage": "https://github.com/3box/3box-verifications#readme",
   "dependencies": {
     "3id-resolver": "^1.0.1",
-    "analytics-node": "^3.4.0-beta.3",
+    "analytics-node": "^4.0.0",
     "aws-sdk": "^2.783.0",
     "did-jwt": "^4.6.2",
     "ipfs-s3-dag-get": "^0.2.0",
