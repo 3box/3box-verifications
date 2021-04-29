@@ -1,0 +1,59 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  target-branch: develop
+  reviewers:
+  - simonovic86
+  assignees:
+  - simonovic86
+  allow:
+  - dependency-type: production
+  ignore:
+  - dependency-name: aws-sdk
+    versions:
+    - 2.831.0
+    - 2.834.0
+    - 2.839.0
+    - 2.843.0
+    - 2.848.0
+    - 2.853.0
+    - 2.858.0
+    - 2.863.0
+    - 2.868.0
+    - 2.874.0
+    - 2.879.0
+    - 2.884.0
+  - dependency-name: webpack
+    versions:
+    - 5.17.0
+    - 5.19.0
+    - 5.21.2
+    - 5.22.0
+    - 5.23.0
+    - 5.24.2
+    - 5.24.3
+    - 5.25.1
+    - 5.27.1
+    - 5.28.0
+    - 5.30.0
+    - 5.31.2
+  - dependency-name: redis
+    versions:
+    - 3.1.0
+  - dependency-name: did-jwt
+    versions:
+    - 4.8.1
+    - 4.9.0
+    - 5.0.1
+    - 5.1.2
+  - dependency-name: serverless-webpack
+    versions:
+    - 5.4.0
+  - dependency-name: analytics-node
+    versions:
+    - 3.5.0
+    - 4.0.0
