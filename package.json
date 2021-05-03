@@ -29,7 +29,7 @@
     "node-fetch": "^2.6.1",
     "redis": "^3.0.2",
     "serverless-kms-secrets": "^1.0.4",
-    "serverless-webpack": "^5.3.4",
+    "serverless-webpack": "^5.4.2",
     "twit": "^2.2.11",
     "webpack": "^4.44.2",
     "webpack-node-externals": "^2.5.2"
